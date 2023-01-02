@@ -1,5 +1,5 @@
-defmodule UwuBlogWeb.PageControllerTest do
-  use UwuBlogWeb.ConnCase
+defmodule UwUBlogWeb.PageControllerTest do
+  use UwUBlogWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")

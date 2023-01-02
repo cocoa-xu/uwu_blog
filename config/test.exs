@@ -5,7 +5,7 @@ import Config
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
-config :uwu_blog, UwuBlog.Repo,
+config :uwu_blog, UwUBlog.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
@@ -15,13 +15,13 @@ config :uwu_blog, UwuBlog.Repo,
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
-config :uwu_blog, UwuBlogWeb.Endpoint,
+config :uwu_blog, UwUBlogWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "xF2/vbb/5R/pAj1NZBuPzPXUm5hOg4a+3VVz5AhuNpobdi4q04bfHn7rcmX/mJDR",
   server: false
 
 # In test we don't send emails.
-config :uwu_blog, UwuBlog.Mailer, adapter: Swoosh.Adapters.Test
+config :uwu_blog, UwUBlog.Mailer, adapter: Swoosh.Adapters.Test
 
 # Print only warnings and errors during test
 config :logger, level: :warn

@@ -8,13 +8,13 @@
 import Config
 
 config :uwu_blog,
-  ecto_repos: [UwuBlog.Repo]
+  ecto_repos: [UwUBlog.Repo]
 
 # Configures the endpoint
-config :uwu_blog, UwuBlogWeb.Endpoint,
+config :uwu_blog, UwUBlogWeb.Endpoint,
   url: [host: "localhost"],
-  render_errors: [view: UwuBlogWeb.ErrorView, accepts: ~w(html json), layout: false],
-  pubsub_server: UwuBlog.PubSub,
+  render_errors: [view: UwUBlogWeb.ErrorView, accepts: ~w(html json), layout: false],
+  pubsub_server: UwUBlog.PubSub,
   live_view: [signing_salt: "5QTI/rFH"]
 
 # Configures the mailer
@@ -24,7 +24,7 @@ config :uwu_blog, UwuBlogWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :uwu_blog, UwuBlog.Mailer, adapter: Swoosh.Adapters.Local
+config :uwu_blog, UwUBlog.Mailer, adapter: Swoosh.Adapters.Local
 
 # Swoosh API client is needed for adapters other than SMTP.
 config :swoosh, :api_client, false

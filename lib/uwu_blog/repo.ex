@@ -1,4 +1,4 @@
-defmodule UwuBlog.Repo do
+defmodule UwUBlog.Repo do
   use Ecto.Repo,
     otp_app: :uwu_blog,
     adapter: Ecto.Adapters.Postgres

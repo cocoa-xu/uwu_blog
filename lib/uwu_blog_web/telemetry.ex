@@ -1,4 +1,4 @@
-defmodule UwuBlogWeb.Telemetry do
+defmodule UwUBlogWeb.Telemetry do
   use Supervisor
   import Telemetry.Metrics
 
@@ -65,7 +65,7 @@ defmodule UwuBlogWeb.Telemetry do
     [
       # A module, function and arguments to be invoked periodically.
       # This function must call :telemetry.execute/3 and a metric must be added above.
-      # {UwuBlogWeb, :count_users, []}
+      # {UwUBlogWeb, :count_users, []}
     ]
   end
 end

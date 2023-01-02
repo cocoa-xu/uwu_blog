@@ -1,5 +1,5 @@
-defmodule UwuBlogWeb.ErrorView do
-  use UwuBlogWeb, :view
+defmodule UwUBlogWeb.ErrorView do
+  use UwUBlogWeb, :view
 
   # If you want to customize a particular status code
   # for a certain format, you may uncomment below.

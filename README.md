@@ -1,4 +1,4 @@
-# UwuBlog
+# UwUBlog
 
 To start your Phoenix server:
 

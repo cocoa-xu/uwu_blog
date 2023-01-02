@@ -1,12 +1,12 @@
-defmodule UwuBlogWeb do
+defmodule UwUBlogWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, views, channels and so on.
 
   This can be used in your application as:
 
-      use UwuBlogWeb, :controller
-      use UwuBlogWeb, :view
+      use UwUBlogWeb, :controller
+      use UwUBlogWeb, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -19,11 +19,11 @@ defmodule UwuBlogWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: UwuBlogWeb
+      use Phoenix.Controller, namespace: UwUBlogWeb
 
       import Plug.Conn
-      import UwuBlogWeb.Gettext
-      alias UwuBlogWeb.Router.Helpers, as: Routes
+      import UwUBlogWeb.Gettext
+      alias UwUBlogWeb.Router.Helpers, as: Routes
     end
   end
 
@@ -31,7 +31,7 @@ defmodule UwuBlogWeb do
     quote do
       use Phoenix.View,
         root: "lib/uwu_blog_web/templates",
-        namespace: UwuBlogWeb
+        namespace: UwUBlogWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller,
@@ -45,7 +45,7 @@ defmodule UwuBlogWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {UwuBlogWeb.LayoutView, "live.html"}
+        layout: {UwUBlogWeb.LayoutView, "live.html"}
 
       unquote(view_helpers())
     end
@@ -80,7 +80,7 @@ defmodule UwuBlogWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import UwuBlogWeb.Gettext
+      import UwUBlogWeb.Gettext
     end
   end
 
@@ -95,9 +95,9 @@ defmodule UwuBlogWeb do
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
 
-      import UwuBlogWeb.ErrorHelpers
-      import UwuBlogWeb.Gettext
-      alias UwuBlogWeb.Router.Helpers, as: Routes
+      import UwUBlogWeb.ErrorHelpers
+      import UwUBlogWeb.Gettext
+      alias UwUBlogWeb.Router.Helpers, as: Routes
     end
   end
 

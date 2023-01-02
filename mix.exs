@@ -1,4 +1,4 @@
-defmodule UwuBlog.MixProject do
+defmodule UwUBlog.MixProject do
   use Mix.Project
 
   def project do
@@ -19,7 +19,7 @@ defmodule UwuBlog.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {UwuBlog.Application, []},
+      mod: {UwUBlog.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end

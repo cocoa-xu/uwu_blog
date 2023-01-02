@@ -1,3 +1,3 @@
-defmodule UwuBlogWeb.PageViewTest do
-  use UwuBlogWeb.ConnCase, async: true
+defmodule UwUBlogWeb.PageViewTest do
+  use UwUBlogWeb.ConnCase, async: true
 end

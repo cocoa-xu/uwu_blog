@@ -1,4 +1,4 @@
-defmodule UwuBlogWeb.ErrorHelpers do
+defmodule UwUBlogWeb.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -39,9 +39,9 @@ defmodule UwuBlogWeb.ErrorHelpers do
     # should be written to the errors.po file. The :count option is
     # set by Ecto and indicates we should also apply plural rules.
     if count = opts[:count] do
-      Gettext.dngettext(UwuBlogWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(UwUBlogWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(UwuBlogWeb.Gettext, "errors", msg, opts)
+      Gettext.dgettext(UwUBlogWeb.Gettext, "errors", msg, opts)
     end
   end
 end

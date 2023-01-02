@@ -1,5 +1,5 @@
-defmodule UwuBlogWeb.PageController do
-  use UwuBlogWeb, :controller
+defmodule UwUBlogWeb.PageController do
+  use UwUBlogWeb, :controller
 
   def index(conn, _params) do
     render(conn, "index.html")

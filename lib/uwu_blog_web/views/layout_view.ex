@@ -1,5 +1,5 @@
-defmodule UwuBlogWeb.LayoutView do
-  use UwuBlogWeb, :view
+defmodule UwUBlogWeb.LayoutView do
+  use UwUBlogWeb, :view
 
   # Phoenix LiveDashboard is available only in development by default,
   # so we instruct Elixir to not warn if the dashboard route is missing.
