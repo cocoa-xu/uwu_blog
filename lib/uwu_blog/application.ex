@@ -15,7 +15,8 @@ defmodule UwUBlog.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: UwUBlog.PubSub},
       # Start the Endpoint (http/https)
-      UwUBlogWeb.Endpoint
+      UwUBlogWeb.Endpoint,
+      UwUBlog.Post
       # Start a worker by calling: UwUBlog.Worker.start_link(arg)
       # {UwUBlog.Worker, arg}
     ]

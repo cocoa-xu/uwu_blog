@@ -1,9 +1,25 @@
 defmodule UwUBlog do
-  @moduledoc """
-  UwUBlog keeps the contexts that define your domain
-  and business logic.
+  @moduledoc false
 
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
-  """
+  def site_title do
+    "Cocoa's Blog"
+  end
+
+  def nav_items do
+    [
+      %{
+        name: "Home",
+        href: "/"
+      }
+    ]
+  end
+
+  def kira do
+    [
+      %{
+        name: "<sup>^</sup>Makito<sup>^</sup>",
+        link: "https://maki.to"
+      }
+    ]
+  end
 end
