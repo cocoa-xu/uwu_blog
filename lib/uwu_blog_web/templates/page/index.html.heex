@@ -5,23 +5,23 @@
     <div class="card">
     <h3 class="post-title"><a href={"/post/#{post.frontmatter["slogan"]}"}><%= post.frontmatter["title"] %></a></h3>
     <span class="post-time"><%= post.frontmatter["date"] %></span>
-    <p class="description">
-      <%= post.frontmatter["description"] %>
+    <p class="post-excerpt">
+      <%= raw post.frontmatter["excerpt"] %>
     </p>
     <div class="options">
       <span>
-      <a href={"/post/#{post.frontmatter["slogan"]}"}>Read Full Blog</a>
+      <a class="post-readmore" href={"/post/#{post.frontmatter["slogan"]}"}>Read Full Blog</a>
       </span>
     </div>
     </div>
     <% end %>
   </div>
 </article>
-<article class="column post-section">
-  <h2>☆〜（ゝ。∂）</h2>
+<article class="column post-section kira">
+  <h2 class="kira">☆〜（ゝ。∂）</h2>
   <ul>
     <%= for k <- UwUBlog.kira do %>
-    <li><a href={"#{k.link}"}><%= raw k.name %></a></li>
+    <li><a href={"#{k.link}"} target="_blank" rel="noreferrer noopener"><%= raw k.name %></a></li>
     <% end %>
   </ul>
 </article>

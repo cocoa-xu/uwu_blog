@@ -46,13 +46,13 @@ defmodule UwUBlog.Post do
         if File.exists?(post.file) do
           if post.mtime != File.stat!(post.file).mtime do
             updated = process(post.file)
-            state = List.replace_at(posts, post_index, updated)
+            state = %{posts: List.replace_at(posts, post_index, updated)}
             {updated, state}
           else
             {post, state}
           end
         else
-          {nil, List.delete_at(posts, post_index)}
+          {nil, %{posts: List.delete_at(posts, post_index)}}
         end
       else
         {nil, state}
@@ -83,7 +83,7 @@ defmodule UwUBlog.Post do
     }
   end
 
-  def standardize_frontmatter(markdown_file, frontmatter, _content) do
+  def standardize_frontmatter(markdown_file, frontmatter, content) do
     slogan = frontmatter["slogan"]
     {frontmatter, slogan} =
       if slogan == nil do
@@ -93,7 +93,21 @@ defmodule UwUBlog.Post do
         {frontmatter, slogan}
       end
 
-    frontmatter = Map.put(frontmatter, "description", "Test")
+    excerpt = frontmatter["excerpt"]
+    frontmatter =
+      if excerpt == nil do
+        excerpt =
+          case EarmarkParser.as_ast(content) do
+            {:ok, [first | _], _} ->
+              Earmark.Transform.transform(first)
+            _ ->
+              ""
+          end
+        Map.put(frontmatter, "excerpt", excerpt)
+      else
+        frontmatter
+      end
+
     {frontmatter, slogan}
   end
 

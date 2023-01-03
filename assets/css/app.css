@@ -8,7 +8,7 @@
   --nav-text: #FF9494;
   --post-title: #FF9494;
   --post-card-bg: #FFF6F6;
-  --description: #674747;
+  --post-excerpt: #674747;
   --text: #FF9494;
   --inline-code: #FBE2E5;
   /* Typography */
@@ -59,7 +59,7 @@ body{
 
 .blog-title h1 {
   font-family: 'Source Serif Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-  font-weight: 300;
+  font-weight: var(--fw-light);
   font-size: var(--h1);
 }
 
@@ -114,7 +114,7 @@ header nav a {
   display: block;
   font-family: 'Merriweather';
   font-size:1.5em;
-  font-weight:700;
+  font-weight: var(--fw-bold);
   letter-spacing:.01em;
   line-height:1.6;
   text-decoration: none;
@@ -188,9 +188,23 @@ code[class=inline] {
   cursor:default;
 }
 
-.description{
+.post-excerpt{
   padding: 0;
-  color: var(--description);
+  color: var(--post-excerpt);
+  font-size: var(--paragraph);
+}
+
+.post-readmore{
+  font-size: var(--info-text);
+}
+
+/* Kira */
+.kira {
+  margin-top: 4rem;
+  font-size: var(--title);
+}
+
+.kira li {
   font-size: var(--paragraph);
 }
 
