@@ -17,7 +17,8 @@
   --h2: 1.5rem;
   --h3: 1.25rem;
   --title: 1.5rem;
-  --paragraph: 1.125rem;
+  --paragraph: 1.25rem;
+  --excerpt: 1.125rem;
   --info-text: 1rem;
   --text-width-wide: 70ch;
   --text-width-medium: 60ch;
@@ -190,11 +191,15 @@ code[class=inline] {
 .post-excerpt{
   padding: 0;
   color: var(--post-excerpt);
-  font-size: var(--paragraph);
+  font-size: var(--excerpt);
 }
 
 .post-readmore{
   font-size: var(--info-text);
+}
+
+.post {
+  font-size: var(--paragraph);
 }
 
 /* Kira */
