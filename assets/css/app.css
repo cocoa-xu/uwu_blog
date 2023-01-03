@@ -11,6 +11,7 @@
   --post-excerpt: #674747;
   --text: #FF9494;
   --inline-code: #FBE2E5;
+  --selection: #FFF2F2;
   /* Typography */
   --h1: 2.25rem;
   --h2: 1.5rem;
@@ -36,7 +37,9 @@
   --radius-s: 0.5em;
   --center-it: auto;
 }
-
+::selection { 
+  background: var(--selection);
+}
 *,*:after,*:before{
   box-sizing:inherit
 }
@@ -51,10 +54,6 @@ body{
   font-weight: 400;
   letter-spacing: .01em;
   line-height: 1.6;
-}
-
-.post pre {
-  font-size: 0.9rem;
 }
 
 .blog-title h1 {
