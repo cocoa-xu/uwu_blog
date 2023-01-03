@@ -3,14 +3,14 @@
   <div class="cards">
     <%= for post <- UwUBlog.Post.parse_posts().posts do %>
     <div class="card">
-    <h3 class="post-title"><a href={"/post/#{post.frontmatter["slogan"]}"}><%= post.frontmatter["title"] %></a></h3>
+    <h3 class="post-title"><a href={"/post/#{post.frontmatter["permalink"]}"}><%= post.frontmatter["title"] %></a></h3>
     <span class="post-time"><%= post.frontmatter["date"] %></span>
     <p class="post-excerpt">
       <%= raw post.frontmatter["excerpt"] %>
     </p>
     <div class="options">
       <span>
-      <a class="post-readmore" href={"/post/#{post.frontmatter["slogan"]}"}>Read Full Blog</a>
+      <a class="post-readmore" href={"/post/#{post.frontmatter["permalink"]}"}>Read Full Blog</a>
       </span>
     </div>
     </div>

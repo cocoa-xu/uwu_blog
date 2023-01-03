@@ -18,7 +18,7 @@ defmodule UwUBlogWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    get "/post/:slogan", PageController, :post
+    get "/post/:permalink", PageController, :post
   end
 
   # Other scopes may use custom stacks.

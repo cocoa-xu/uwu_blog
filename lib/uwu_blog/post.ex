@@ -26,19 +26,19 @@ defmodule UwUBlog.Post do
     |> Enum.map(&process(&1))
   end
 
-  def get_post(slogan) do
+  def get_post(permalink) do
     Agent.get_and_update(__MODULE__, fn
       %{posts: []} ->
         posts = _parse_post()
-        find_post(%{posts: posts}, slogan)
+        find_post(%{posts: posts}, permalink)
       state ->
-        find_post(state, slogan)
+        find_post(state, permalink)
     end)
   end
 
-  def find_post(state=%{posts: posts}, slogan) do
+  def find_post(state=%{posts: posts}, permalink) do
     post_index = Enum.find_index(posts, fn post ->
-      post.slogan == slogan
+      post.permalink == permalink
     end)
     {post, state} =
       if post_index do
@@ -65,18 +65,18 @@ defmodule UwUBlog.Post do
     end
   end
 
-  def find_post(state, _slogan) do
+  def find_post(state, _permalink) do
     {{:error, :not_found}, state}
   end
 
   def process(markdown_file) do
     markdown = File.read!(markdown_file)
     {frontmatter, content} = parse_frontmatter(markdown_file, markdown)
-    {frontmatter, slogan} = standardize_frontmatter(markdown_file, frontmatter, content)
+    {frontmatter, permalink} = standardize_frontmatter(markdown_file, frontmatter, content)
 
     %{
       frontmatter: frontmatter,
-      slogan: slogan,
+      permalink: permalink,
       mtime: File.stat!(markdown_file).mtime,
       file: markdown_file,
       content: Earmark.as_html!(content, Earmark.Options.make_options!(code_class_prefix: "language-"))
@@ -84,13 +84,13 @@ defmodule UwUBlog.Post do
   end
 
   def standardize_frontmatter(markdown_file, frontmatter, content) do
-    slogan = frontmatter["slogan"]
-    {frontmatter, slogan} =
-      if slogan == nil do
-        slogan = slogan_from_filename(markdown_file)
-        {Map.put(frontmatter, "slogan", slogan), slogan}
+    permalink = frontmatter["permalink"]
+    {frontmatter, permalink} =
+      if permalink == nil do
+        permalink = permalink_from_filename(markdown_file)
+        {Map.put(frontmatter, "permalink", permalink), permalink}
       else
-        {frontmatter, slogan}
+        {frontmatter, permalink}
       end
 
     excerpt = frontmatter["excerpt"]
@@ -108,10 +108,10 @@ defmodule UwUBlog.Post do
         frontmatter
       end
 
-    {frontmatter, slogan}
+    {frontmatter, permalink}
   end
 
-  def slogan_from_filename(markdown_file) do
+  def permalink_from_filename(markdown_file) do
     String.replace(String.replace(Path.basename(markdown_file), ".md", ""), "_", "-")
   end
 

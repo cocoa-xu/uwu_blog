@@ -5,8 +5,8 @@ defmodule UwUBlogWeb.PageController do
     render(conn, "index.html")
   end
 
-  def post(conn, %{"slogan" => slogan}) do
-    case UwUBlog.Post.get_post(slogan) do
+  def post(conn, %{"permalink" => permalink}) do
+    case UwUBlog.Post.get_post(permalink) do
       {:ok, post} ->
         render(conn, "post.html", post: post)
       {:error, :not_found} ->

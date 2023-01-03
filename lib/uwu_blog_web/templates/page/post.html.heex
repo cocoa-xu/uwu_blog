@@ -1,5 +1,5 @@
 <article class="column post-section-title">
-  <h2><a href={"/post/#{@post.frontmatter["slogan"]}"}><%= @post.frontmatter["title"] %></a></h2>
+  <h2><a href={"/post/#{@post.frontmatter["permalink"]}"}><%= @post.frontmatter["title"] %></a></h2>
   <h3><%= @post.frontmatter["date"] %></h3>
   <div class="post">
     <%= raw @post.content %>
