@@ -88,7 +88,7 @@ Now I need to figure out a way to connect everything in the `UwUBlogWeb.PageView
 
 Note that the variable `assigns` here is constructed in the true branch of the conditional rendering `if`-statement,
 
-```
+```html
 <%= if Map.has_key?(@post.frontmatter, "template") do %>
   <%= render(UwUBlogWeb.PageView, @post.frontmatter["template"]["using"], post: @post) %>
 <% else %>
