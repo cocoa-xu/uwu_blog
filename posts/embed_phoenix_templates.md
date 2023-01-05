@@ -21,7 +21,7 @@ template:
 
 After I wrote my first ever blog in Phoenix, I was thinking about what interesting things I can experiment with it. And here it is! 
 
-As you can see, this page has a `<details>` element at the top, and that is the HEEx template for this post. So, yes, I wrote the HEEx template inside a markdown file, compile it on-the-fly, and outputs itself in the rendered page!
+As you can see, this page has a `<details>` element at the top, and that is the HEEx template for this post. So, yes, I wrote the HEEx template inside a markdown file, compile it on-the-fly, and output itself in the rendered page!
 
 Let's see how I made this possible.
 
