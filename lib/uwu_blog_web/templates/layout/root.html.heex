@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="csrf-token" content={csrf_token_value()}>
-    <title><%= UwUBlog.site_title %></title>
+    <title><%= site_title() %></title>
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")}/>
     <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
   </head>
@@ -14,7 +14,7 @@
       <section class="container">
         <nav>
           <ul>
-            <%= for item <- UwUBlog.nav_items do %>
+            <%= for item <- nav_items() do %>
             <li><a href={"#{item.href}"}><%= item.name %></a></li>
             <% end %>
           </ul>

@@ -1,7 +1,11 @@
-<article class="column post-section-title">
-  <h2><a href={"/post/#{@post.frontmatter["permalink"]}"}><%= @post.frontmatter["title"] %></a></h2>
-  <h3><%= @post.frontmatter["date"] %></h3>
-  <div class="post">
-    <%= raw @post.content %>
-  </div>
-</article>
+<%= if Map.has_key?(@post.frontmatter, "template") do %>
+  <%= render(UwUBlogWeb.PageView, @post.frontmatter["template"]["using"], post: @post) %>
+<% else %>
+  <article class="column post-section-title">
+    <h2><a href={"/post/#{@post.frontmatter["permalink"]}"}><%= @post.frontmatter["title"] %></a></h2>
+    <h3><%= @post.frontmatter["date"] %></h3>
+    <div class="post">
+      <%= raw @post.content %>
+    </div>
+  </article>
+<% end %>
