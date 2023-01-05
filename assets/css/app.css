@@ -16,9 +16,11 @@
   --h1: 2.25rem;
   --h2: 1.5rem;
   --h3: 1.25rem;
-  --title: 1.5rem;
-  --paragraph: 1.25rem;
-  --excerpt: 1.125rem;
+  --blog-title: 1.6rem;
+  --nav-font-size: 1.4rem;
+  --title: 1.2rem;
+  --paragraph: 1.15rem;
+  --excerpt: 1.1rem;
   --info-text: 1rem;
   --text-width-wide: 70ch;
   --text-width-medium: 60ch;
@@ -60,7 +62,7 @@ body{
 .blog-title h1 {
   font-family: 'Source Serif Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
   font-weight: var(--fw-light);
-  font-size: var(--h1);
+  font-size: var(--blog-title);
 }
 
 img {
@@ -113,10 +115,10 @@ header nav a {
   color: var(--nav-text);
   display: block;
   font-family: 'Merriweather';
-  font-size:1.5em;
+  font-size: var(--nav-font-size);
   font-weight: var(--fw-bold);
-  letter-spacing:.01em;
-  line-height:1.6;
+  letter-spacing: .01em;
+  line-height: 1.4;
   text-decoration: none;
 }
 
