@@ -1,16 +1,16 @@
 @import "./prism.css";
 @import "./prism-line-numbers.min.css";
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Merriweather:wght@700&family=Source+Serif+Pro:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Merriweather:wght@700&family=Source+Serif+Pro:wght@300&family=Special+Elite&display=swap');
 
 :root {
   /* pink */
   --bg: #FFF;
-  --nav-text: #FF9494;
-  --post-title: #FF9494;
-  --post-card-bg: #FFF6F6;
-  --post-excerpt: #674747;
-  --text: #FF9494;
-  --inline-code: #FBE2E5;
+  --nav-text: #090909;
+  --post-title: #151515;
+  --post-card-bg: #f9f9f9;
+  --post-excerpt: #484545;
+  --text: #1f1f1f;
+  --inline-code: #dedede;
   --selection: #FFF2F2;
   /* Typography */
   --h1: 2.25rem;
@@ -18,7 +18,19 @@
   --h3: 1.25rem;
   --blog-title: 1.6rem;
   --nav-font-size: 1.4rem;
+  /* normal */
   --title: 1.2rem;
+  --paragraph: 1.15rem;
+  --excerpt: 1.1rem;
+  --info-text: 1rem;
+  --text-width-wide: 70ch;
+  --text-width-medium: 60ch;
+  --fw-bold: 700;
+  --fw-semibold: 600;
+  --fw-regular: 500;
+  --fw-light: 300;
+  /* sm */
+  --sm-title: 1.0rem;
   --paragraph: 1.15rem;
   --excerpt: 1.1rem;
   --info-text: 1rem;
@@ -53,10 +65,9 @@ body{
   color:var(--text);
   background: var(--bg);
   font-family: 'Crimson Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-  font-size: 1.6em;
+  font-size: var(--paragraph);
   font-weight: 400;
   letter-spacing: .01em;
-  line-height: 1.6;
 }
 
 .blog-title h1 {
@@ -129,6 +140,7 @@ a {
 
 h2 a {
   text-decoration: none;
+  line-height: 1.6;
 }
 
 /* Post */
@@ -142,13 +154,15 @@ code[class=inline] {
 
 .cards {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content:first baseline;
   gap: 1rem;
 }
 
 .card{
-  width: 25rem;
+  flex: 1 0 48%;
+  max-width: 48%;
   height: auto;
   background: var(--post-card-bg);
   border-radius: 1.5rem;
@@ -202,6 +216,44 @@ code[class=inline] {
 
 .post {
   font-size: var(--paragraph);
+  font-weight: 400;
+  letter-spacing: .01em;
+  line-height: 1.6;
+}
+
+blockquote {
+  font-family: 'Special Elite', cursive;
+	font-weight: 100;
+	font-size: var(--paragraph);
+	line-height: 1.4;
+	position: relative;
+	margin: 0;
+	padding: .5rem;
+}
+
+blockquote:before,
+blockquote:after {
+	position: absolute;
+	font-size: 2rem;
+	width: 1rem;
+	height: 1rem;
+}
+
+blockquote:before {
+	content: '“';
+	left: -1rem;
+	top: 0rem;
+}
+
+blockquote:after {
+	content: '”';
+	right: -1rem;
+	bottom: -1rem;
+}
+
+cite {
+	line-height: 3;
+	text-align: left;
 }
 
 /* Kira */
@@ -214,8 +266,19 @@ code[class=inline] {
   font-size: var(--paragraph);
 }
 
-@media (min-width: 40.0rem) { /* Small devices (landscape phones, 576px and up) */
+@media (max-width: 880px) {
   header section {
     flex-direction: row;
+  }
+  .card{
+    flex: 1 0 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 500px) {
+  h2 a {
+    font-size: var(--nav-font-size);
+    line-height: normal;
   }
 }
