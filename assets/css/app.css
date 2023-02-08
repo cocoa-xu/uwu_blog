@@ -3,7 +3,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Merriweather:wght@700&family=Source+Serif+Pro:wght@300&family=Special+Elite&display=swap');
 
 :root {
-  /* pink */
   --bg: #FFF;
   --nav-text: #090909;
   --post-title: #151515;
@@ -236,7 +235,7 @@ blockquote:after {
 	position: absolute;
 	font-size: 2rem;
 	width: 1rem;
-	height: 1rem;
+	height: -1rem;
 }
 
 blockquote:before {
@@ -264,6 +263,53 @@ cite {
 
 .kira li {
   font-size: var(--paragraph);
+}
+
+/* now-playing */
+.music__times {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: space-between;
+  justify-content: space-between;
+  align-content: space-between;
+  width: 100%;
+  height: 25px;
+  color: #9a9d9a;
+}
+.music__duration, .music__current_time {
+  width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.music__times, .music__duration, .music__current_time {
+  padding: 0;
+  margin: 0;
+  font-size: 0.8rem;
+}
+.music__duration {
+  text-align: right;
+  padding-right: 5px;
+}
+.music__current_time {
+  text-align: left;
+  padding-left: 2px;
+}
+.music__seek {
+  width: 100%;
+  background-color: #add8e6;
+}
+.music__seek_handle {
+  display: block;
+  background-color: #5c9dc0;
+}
+.music__seek, .music__seek_handle {
+  height: 3px;
+  border-radius: 9px;
+  transition-timing-function: ease-in-out;
+  cursor: pointer;
+  will-change: height;
 }
 
 @media (max-width: 880px) {

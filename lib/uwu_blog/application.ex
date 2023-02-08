@@ -16,7 +16,8 @@ defmodule UwUBlog.Application do
       {Phoenix.PubSub, name: UwUBlog.PubSub},
       # Start the Endpoint (http/https)
       UwUBlogWeb.Endpoint,
-      UwUBlog.Post
+      UwUBlog.Post,
+      UwUBlogWeb.Plugs.NowPlaying
       # Start a worker by calling: UwUBlog.Worker.start_link(arg)
       # {UwUBlog.Worker, arg}
     ]

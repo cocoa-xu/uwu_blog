@@ -14,6 +14,16 @@ defmodule UwUBlogWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :now_playing_api do
+    plug UwUBlogWeb.Plugs.NowPlaying, :fetch
+  end
+
+  scope "/now-playing", UwUBlogWeb do
+    pipe_through :api
+
+    post "/", Plugs.NowPlaying, :update
+  end
+
   scope "/", UwUBlogWeb do
     pipe_through :browser
 

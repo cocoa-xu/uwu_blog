@@ -29,6 +29,9 @@ config :uwu_blog, UwUBlogWeb.Endpoint,
     esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
   ]
 
+config :uwu_blog, UwUBlogWeb.Plugs.NowPlaying,
+  apikey: "NOWPLAYINGAPIKEY"
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
