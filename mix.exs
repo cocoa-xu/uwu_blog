@@ -49,7 +49,6 @@ defmodule UwUBlog.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-
       {:earmark, "~> 1.4"},
       {:yaml_elixir, "~> 2.9"}
     ]

@@ -6,10 +6,10 @@ defmodule UwUBlogWeb.LayoutView do
   @compile {:no_warn_undefined, {Routes, :live_dashboard_path, 2}}
 
   def site_title do
-    UwUBlog.site_title
+    UwUBlog.site_title()
   end
 
   def nav_items do
-    UwUBlog.nav_items
+    UwUBlog.nav_items()
   end
 end

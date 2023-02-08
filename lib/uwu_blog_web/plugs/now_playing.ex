@@ -14,7 +14,7 @@ defmodule UwUBlogWeb.Plugs.NowPlaying do
 
   def init(default), do: default
 
-  defp api_key, do: "cocoa!"
+  defp api_key, do: Application.fetch_env!(:uwu_blog, __MODULE__)[:apikey]
   defp timeout, do: 10
 
   def call(

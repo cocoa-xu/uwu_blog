@@ -9,6 +9,7 @@ defmodule UwUBlogWeb.PageController do
     case UwUBlog.Post.get_post(permalink) do
       {:ok, post} ->
         render(conn, "post.html", post: post)
+
       {:error, :not_found} ->
         render(conn, "404.html")
     end
