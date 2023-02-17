@@ -19,6 +19,10 @@ defmodule UwUBlog do
       %{
         name: "<sup>^</sup>Makito<sup>^</sup>",
         link: "https://maki.to"
+      },
+      %{
+        name: "千千",
+        link: "https://wwyqianqian.github.io/"
       }
     ]
   end
