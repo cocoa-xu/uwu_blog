@@ -31,7 +31,8 @@
         <div class="now-playing-item"><%= raw link %>
           <div class="music__times duration">
             <div id="music-seek" class="music__seek bar--duration">
-              <span class="music__seek_handle" style="width: ${width}%"></span>
+              <% width = Float.round(item["current_time"] / item["duration"] * 100.0, 1) %>
+              <span class="music__seek_handle" style={"width: #{width}%"}></span>
             </div>
             <span id="music-current-time" class="music__current_time duration__current">
               <%= Time.to_string(Time.add(~T[00:00:00], trunc(item["current_time"]) * 1000, :millisecond)) %>
