@@ -261,7 +261,8 @@ cite {
   font-size: var(--title);
 }
 
-.kira li {
+.links li {
+  padding-top: 0.3rem;
   font-size: var(--paragraph);
 }
 
