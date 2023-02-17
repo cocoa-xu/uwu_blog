@@ -31,7 +31,7 @@
         <div class="now-playing-item"><%= raw link %>
           <div class="music__times duration">
             <div id="music-seek" class="music__seek bar--duration">
-              <% width = Float.round(item["current_time"] / item["duration"] * 100.0, 1) %>
+              <% width = if item["duration"] > 0, do: Float.round(item["current_time"] / item["duration"] * 100.0, 1), else: 100 %>
               <span class="music__seek_handle" style={"width: #{width}%"}></span>
             </div>
             <span id="music-current-time" class="music__current_time duration__current">
