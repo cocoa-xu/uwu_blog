@@ -34,7 +34,7 @@ defmodule UwUBlogWeb.Plugs.NowPlaying do
             "title" => title
           }
         } = conn,
-        _default
+        :update
       ) do
     if apikey == api_key() do
       key = "#{type}-#{data}"
@@ -59,12 +59,11 @@ defmodule UwUBlogWeb.Plugs.NowPlaying do
 
       conn
       |> Plug.Conn.send_resp(200, [])
-      |> Plug.Conn.halt()
     else
       conn
       |> Plug.Conn.send_resp(401, [])
-      |> Plug.Conn.halt()
     end
+    |> Plug.Conn.halt()
   end
 
   def call(%Plug.Conn{} = conn, :fetch) do
