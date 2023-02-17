@@ -17,6 +17,12 @@ defmodule UwUBlogWeb.Plugs.NowPlaying do
   defp api_key, do: Application.fetch_env!(:uwu_blog, __MODULE__)[:apikey]
   defp timeout, do: 10
 
+  defp remove_timeout(now_playing) do
+    Map.filter(now_playing, fn {_, v} ->
+      :erlang.monotonic_time(:second) - Map.get(v, "last_seen", 0) < timeout()
+    end)
+  end
+
   def call(
         %Plug.Conn{
           params: %{
@@ -45,9 +51,7 @@ defmodule UwUBlogWeb.Plugs.NowPlaying do
           }
           updated =
             Map.update(now_playing, key, updated_progress, fn _ -> updated_progress end)
-            |> Map.filter(fn {_, v} ->
-              :erlang.monotonic_time(:second) - Map.get(v, "last_seen", 0) < timeout()
-            end)
+            |> remove_timeout()
 
           UwUBlogWeb.Endpoint.broadcast("now_playing:lobby", "update", updated)
           %{now_playing: updated}
@@ -74,10 +78,17 @@ defmodule UwUBlogWeb.Plugs.NowPlaying do
   end
 
   def get do
+    Agent.update(__MODULE__, fn
+      %{now_playing: now_playing} ->
+        updated = remove_timeout(now_playing)
+        %{now_playing: updated}
+      _ ->
+        %{}
+    end)
+
     Agent.get(__MODULE__, fn
       %{now_playing: now_playing} ->
         now_playing
-
       _ ->
         %{}
     end)
