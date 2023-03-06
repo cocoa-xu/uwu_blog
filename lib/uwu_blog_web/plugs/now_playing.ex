@@ -41,7 +41,7 @@ defmodule UwUBlogWeb.Plugs.NowPlaying do
 
       Agent.update(__MODULE__, fn
         %{now_playing: now_playing} ->
-          updated_progress =  %{
+          updated_progress = %{
             "type" => type,
             "data" => data,
             "current_time" => current_time,
@@ -49,6 +49,7 @@ defmodule UwUBlogWeb.Plugs.NowPlaying do
             "title" => title,
             "last_seen" => :erlang.monotonic_time(:second)
           }
+
           updated =
             Map.update(now_playing, key, updated_progress, fn _ -> updated_progress end)
             |> remove_timeout()
@@ -81,6 +82,7 @@ defmodule UwUBlogWeb.Plugs.NowPlaying do
       %{now_playing: now_playing} ->
         updated = remove_timeout(now_playing)
         %{now_playing: updated}
+
       _ ->
         %{}
     end)
@@ -88,6 +90,7 @@ defmodule UwUBlogWeb.Plugs.NowPlaying do
     Agent.get(__MODULE__, fn
       %{now_playing: now_playing} ->
         now_playing
+
       _ ->
         %{}
     end)
