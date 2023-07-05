@@ -23,6 +23,14 @@ defmodule UwUBlog do
       %{
         name: "千千",
         link: "https://wwyqianqian.github.io/"
+      },
+      %{
+        name: "千夏",
+        link: "https://blog.uuz.moe/"
+      },
+      %{
+        name: "雪羽",
+        link: "https://yukiha.live/"
       }
     ]
   end
