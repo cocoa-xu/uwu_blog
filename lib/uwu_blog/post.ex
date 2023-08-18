@@ -1,5 +1,6 @@
 defmodule UwUBlog.Post do
   @moduledoc false
+  require Logger
   use Agent
 
   def start_link(_) do
@@ -25,8 +26,30 @@ defmodule UwUBlog.Post do
   end
 
   defp _parse_post do
-    Path.wildcard(Path.join(posts_dir(), "*.md"))
-    |> Enum.sort_by(&File.stat!(&1).mtime, :desc)
+    posts_dir = posts_dir()
+    single_files = Enum.map(Path.wildcard(Path.join(posts_dir, "*.md")), fn entry ->
+      %{dir: posts_dir, entry: entry}
+    end)
+    dir_entries =
+      case File.ls(posts_dir) do
+        {:ok, entries} ->
+          entries
+          |> Enum.filter(&File.dir?("#{posts_dir}/#{&1}"))
+          |> Enum.map(&Path.join([posts_dir, &1]))
+          |> Enum.map(fn sub_dir ->
+            Enum.map(Path.wildcard(Path.join(sub_dir, "*.md")), fn entry ->
+              %{dir: sub_dir, entry: entry}
+            end)
+          end)
+          |> List.flatten()
+        _ ->
+          []
+      end
+
+    (single_files ++ dir_entries)
+    |> Enum.sort_by(fn %{dir: sub_dir, entry: entry} ->
+      File.stat!(entry).mtime
+    end, :desc)
     |> Enum.map(&process(&1))
   end
 
@@ -77,10 +100,12 @@ defmodule UwUBlog.Post do
     {{:error, :not_found}, state}
   end
 
-  def process(markdown_file) do
+  def process(post) do
+    markdown_file = post.entry
     markdown = File.read!(markdown_file)
     {frontmatter, content} = parse_frontmatter(markdown_file, markdown)
     {frontmatter, permalink} = standardize_frontmatter(markdown_file, frontmatter, content)
+    Logger.debug("reading: #{markdown_file}")
 
     %{
       frontmatter: frontmatter,
