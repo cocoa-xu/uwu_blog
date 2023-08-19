@@ -29,6 +29,7 @@ defmodule UwUBlogWeb.Router do
 
     get "/", PageController, :index
     get "/post/:permalink", PageController, :post
+    get "/post/:permalink/*assets", PageController, :assets
   end
 
   # Other scopes may use custom stacks.

@@ -27,9 +27,12 @@ defmodule UwUBlog.Post do
 
   defp _parse_post do
     posts_dir = posts_dir()
-    single_files = Enum.map(Path.wildcard(Path.join(posts_dir, "*.md")), fn entry ->
-      %{dir: posts_dir, entry: entry}
-    end)
+
+    single_files =
+      Enum.map(Path.wildcard(Path.join(posts_dir, "*.md")), fn entry ->
+        %{dir: posts_dir, entry: entry}
+      end)
+
     dir_entries =
       case File.ls(posts_dir) do
         {:ok, entries} ->
@@ -42,14 +45,18 @@ defmodule UwUBlog.Post do
             end)
           end)
           |> List.flatten()
+
         _ ->
           []
       end
 
     (single_files ++ dir_entries)
-    |> Enum.sort_by(fn %{dir: sub_dir, entry: entry} ->
-      File.stat!(entry).mtime
-    end, :desc)
+    |> Enum.sort_by(
+      fn %{entry: entry} ->
+        File.stat!(entry).mtime
+      end,
+      :desc
+    )
     |> Enum.map(&process(&1))
   end
 
@@ -74,9 +81,9 @@ defmodule UwUBlog.Post do
       if post_index do
         post = Enum.at(posts, post_index)
 
-        if File.exists?(post.file) do
-          if post.mtime != File.stat!(post.file).mtime do
-            updated = process(post.file)
+        if File.exists?(post.entry) do
+          if post.mtime != File.stat!(post.entry).mtime do
+            updated = process(post)
             state = %{posts: List.replace_at(posts, post_index, updated)}
             {updated, state}
           else
@@ -105,16 +112,62 @@ defmodule UwUBlog.Post do
     markdown = File.read!(markdown_file)
     {frontmatter, content} = parse_frontmatter(markdown_file, markdown)
     {frontmatter, permalink} = standardize_frontmatter(markdown_file, frontmatter, content)
-    Logger.debug("reading: #{markdown_file}")
+
+    html_content =
+      Earmark.Transform.map_ast(
+        Earmark.as_ast!(content),
+        fn node ->
+          case node do
+            {"p", p_atts, [{"img", i_atts, content, i_meta}], p_meta} ->
+              src =
+                Enum.find_value(i_atts, fn
+                  {"src", src} -> src
+                  _ -> nil
+                end)
+
+              if !String.starts_with?(src, ["http://", "https://", "://"]) do
+                i_atts =
+                  Enum.reject(i_atts, fn
+                    {"src", _} -> true
+                    _ -> false
+                  end)
+
+                {:replace,
+                 {"p", p_atts,
+                  [{"img", [{"src", Path.join(permalink, src)}] ++ i_atts, content, i_meta}],
+                  p_meta}}
+              else
+                node
+              end
+
+            _ ->
+              node
+          end
+        end,
+        true
+      )
+      |> Earmark.Transform.transform(
+        Earmark.Options.make_options!(code_class_prefix: "language-")
+      )
 
     %{
       frontmatter: frontmatter,
       permalink: permalink,
       mtime: File.stat!(markdown_file).mtime,
-      file: markdown_file,
-      content:
-        Earmark.as_html!(content, Earmark.Options.make_options!(code_class_prefix: "language-"))
+      entry: markdown_file,
+      dir: post.dir,
+      content: html_content
     }
+  end
+
+  def permalink_to_dir(permalink) do
+    case get_post(permalink) do
+      {:ok, post} ->
+        {:ok, post.dir}
+
+      _ ->
+        {:error, :not_found}
+    end
   end
 
   def standardize_frontmatter(markdown_file, frontmatter, content) do
