@@ -12,7 +12,7 @@ Hence I decided to add support for using local images, which means the blog post
 
 Therefore, we can use single markdown files for simple posts and using a directory for posts that have other assets like images. For example, this post is located in a directory named `adding_image_support_to_my_blog`, and the local image is inside a sub-directory named `assets` (of course, you can use any other directory name other than `assets`).
 
-```sh
+```text
 posts
 ├── add_local_image_support_for_my_blog
 │   ├── assets
@@ -25,13 +25,13 @@ posts
 
 As for the URL to the image, I'd like to follow this pattern,
 
-```
+```text
 https://uwucocoa.moe/posts/:permalink/*assets
 ```
 
 where `:permalink` is the permanent link to the post, and `*assets` will take everything after the `:permalink`. In this example, `DSC01247.jpeg` can be accessed at
 
-```
+```text
 https://uwucocoa.moe/posts/add-local-image-support-for-my-blog/assets/DSC01247.jpeg
 
 :permalink => "adding-image-support-for-my-blog"

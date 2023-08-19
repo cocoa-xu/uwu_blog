@@ -115,7 +115,7 @@ defmodule UwUBlog.Post do
 
     html_content =
       Earmark.Transform.map_ast(
-        Earmark.as_ast!(content),
+        Earmark.as_ast!(content, Earmark.Options.make_options!(code_class_prefix: "language-")),
         fn node ->
           case node do
             {"p", p_atts, [{"img", i_atts, content, i_meta}], p_meta} ->
@@ -146,9 +146,7 @@ defmodule UwUBlog.Post do
         end,
         true
       )
-      |> Earmark.Transform.transform(
-        Earmark.Options.make_options!(code_class_prefix: "language-")
-      )
+      |> Earmark.Transform.transform()
 
     %{
       frontmatter: frontmatter,
