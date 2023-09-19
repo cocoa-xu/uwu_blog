@@ -17,6 +17,10 @@ defmodule UwUBlog do
   def kira do
     [
       %{
+        name: "桃桃乌龙⸝⸝⸝♡",
+        link: "https://peachoolong-uwu.github.io"
+      },
+      %{
         name: "<sup>^</sup>Makito<sup>^</sup>",
         link: "https://maki.to"
       },
