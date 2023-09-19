@@ -20,7 +20,7 @@ defmodule UwUBlogWeb.PageController do
     Enum.any?(Enum.map([".jpg", ".jpeg", ".png", ".webp"], &String.ends_with?(lower, &1)))
   end
 
-  def assets(conn, info = %{"permalink" => permalink, "assets" => assets}) do
+  def assets(conn, _info = %{"permalink" => permalink, "assets" => assets}) do
     case UwUBlog.Post.permalink_to_dir(permalink) do
       {:ok, post_dir} ->
         asset_path = Path.expand(Path.join(post_dir, Path.expand(Path.join(["/"] ++ assets))))
