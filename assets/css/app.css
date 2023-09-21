@@ -77,7 +77,7 @@ body{
 
 img {
   width: 100%;
-  margin-block: var(--spacing-m);
+  margin-block: var(--spacing-xxs);
   border-radius: var(--radius-xs);
 }
 
