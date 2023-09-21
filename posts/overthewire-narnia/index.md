@@ -749,7 +749,7 @@ AAAAAAAAAAAAAAAAAAAA + addr(argv[1]) + BBBB + 'addr(argv[1]) + 32' + shellcode(s
 And their lengths are listed below
 
 | Description        | Content         | Bytes         |
-|:------------------:|:---------------:|:-------------:|
+|:-------------------|:----------------|:--------------|
 | Padding 1          | 'A' * 20        | 20            |
 | addr(argv[1])      | `0x--------`    | 4             |
 | Padding 2          | 'B' * 4         | 4             |
