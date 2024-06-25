@@ -25,12 +25,12 @@ defmodule UwUBlog do
         link: "https://maki.to"
       },
       %{
-        name: "千千",
-        link: "https://wwyqianqian.github.io/"
-      },
-      %{
         name: "千夏",
         link: "https://blog.uuz.moe/"
+      },
+      %{
+        name: "千千",
+        link: "https://wwyqianqian.github.io/"
       },
       %{
         name: "雪羽",
