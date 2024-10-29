@@ -104,15 +104,9 @@ header section {
   flex-direction: column;
   justify-content: space-between;
 }
-header section :first-child {
-  order: 2;
-}
-header section :last-child {
-  order: 1;
-}
 header nav ul,
 header nav li {
-  margin: 0;
+  margin: 0 10px 0 0;
   padding: 0;
   display: block;
   text-align: left;
@@ -120,6 +114,7 @@ header nav li {
 }
 header nav ul {
   margin: 1rem 0;
+  display: flex;
 }
 header nav a {
   color: var(--nav-text);
@@ -152,20 +147,20 @@ code[class=inline] {
 }
 
 .cards {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-rows: masonry;
   align-items: flex-start;
-  justify-content:first baseline;
   gap: 1rem;
 }
 
-.card{
-  flex: 1 0 48%;
-  max-width: 48%;
-  height: auto;
+.card {
   background: var(--post-card-bg);
   border-radius: 1.5rem;
   padding: 1.5rem;
+  flex: 1 0 100%;
+  box-sizing: border-box;
+  height: auto;
   overflow: hidden;
   position: relative;
 }
