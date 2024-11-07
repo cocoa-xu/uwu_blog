@@ -70,6 +70,12 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
+  config :sentry,
+    dsn: (System.get_env("SENTRY_DSN") || raise "SENTRY_DSN is missing"),
+    environment_name: Mix.env(),
+    enable_source_code_context: true,
+    root_source_code_paths: [File.cwd!()]
+
   # ## Configuring the mailer
   #
   # In production you need to configure the mailer to use a different adapter.
