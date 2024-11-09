@@ -20,6 +20,28 @@ if System.get_env("PHX_SERVER") do
   config :uwu_blog, UwUBlogWeb.Endpoint, server: true
 end
 
+honeycomb_api_key = System.get_env("HONEYCOMB_API_KEY")
+
+if honeycomb_api_key do
+  config :opentelemetry,
+    resource: [
+      service: [
+        name: "uwu_blog"
+      ]
+    ]
+
+  config :opentelemetry,
+    traces_exporter: :otlp
+
+  config :opentelemetry_exporter,
+    otlp_protocol: :http_protobuf,
+    otlp_endpoint: "https://api.honeycomb.io:443",
+    otlp_headers: [
+      {"x-honeycomb-team", System.get_env("HONEYCOMB_API_KEY")},
+      {"x-honeycomb-dataset", "uwu_blog"}
+    ]
+end
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
@@ -71,7 +93,7 @@ if config_env() == :prod do
     secret_key_base: secret_key_base
 
   config :sentry,
-    dsn: (System.get_env("SENTRY_DSN") || raise "SENTRY_DSN is missing"),
+    dsn: System.get_env("SENTRY_DSN") || raise("SENTRY_DSN is missing"),
     environment_name: Mix.env(),
     enable_source_code_context: true,
     root_source_code_paths: [File.cwd!()]

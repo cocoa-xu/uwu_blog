@@ -31,8 +31,8 @@ config :swoosh, :api_client, false
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.14.29",
-  default: [
+  version: "0.17.11",
+  favicon_cafe: [
     args:
       ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
@@ -43,6 +43,10 @@ config :esbuild,
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
+
+config :opentelemetry,
+  span_processor: :batch,
+  traces_exporter: :none
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason

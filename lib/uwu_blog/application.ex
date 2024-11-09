@@ -11,6 +11,8 @@ defmodule UwUBlog.Application do
       config: %{metadata: [:file, :line]}
     })
 
+    :ok = start_otel()
+
     children = [
       # Start the Ecto repository
       UwUBlog.Repo,
@@ -32,8 +34,13 @@ defmodule UwUBlog.Application do
     Supervisor.start_link(children, opts)
   end
 
-  # Tell Phoenix to update the endpoint configuration
-  # whenever the application is updated.
+  @spec start_otel() :: :ok
+  def start_otel do
+    OpentelemetryEcto.setup([:favicon_cafe, :repo], db_statement: :enabled)
+    :opentelemetry_cowboy.setup()
+    OpentelemetryPhoenix.setup(adapter: :cowboy2)
+  end
+
   @impl true
   def config_change(changed, _new, removed) do
     UwUBlogWeb.Endpoint.config_change(changed, removed)
