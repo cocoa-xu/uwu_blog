@@ -3,6 +3,8 @@ defmodule UwUBlog.Post do
   require Logger
   use Agent
 
+  use UwUBlog.Tracing.Decorator
+
   def start_link(_) do
     Agent.start_link(
       fn ->
@@ -14,6 +16,7 @@ defmodule UwUBlog.Post do
 
   def posts_dir, do: "posts"
 
+  @decorate trace()
   def parse_posts do
     Agent.get_and_update(__MODULE__, fn
       %{posts: []} = state ->
@@ -25,6 +28,7 @@ defmodule UwUBlog.Post do
     end)
   end
 
+  @decorate trace()
   defp _parse_post do
     posts_dir = posts_dir()
 
@@ -60,6 +64,7 @@ defmodule UwUBlog.Post do
     |> Enum.map(&process(&1))
   end
 
+  @decorate trace()
   def get_post(permalink) do
     Agent.get_and_update(__MODULE__, fn
       %{posts: []} ->
@@ -71,6 +76,7 @@ defmodule UwUBlog.Post do
     end)
   end
 
+  @decorate trace()
   def find_post(state = %{posts: posts}, permalink) do
     post_index =
       Enum.find_index(posts, fn post ->
@@ -107,6 +113,7 @@ defmodule UwUBlog.Post do
     {{:error, :not_found}, state}
   end
 
+  @decorate trace()
   def process(post) do
     markdown_file = post.entry
     markdown = File.read!(markdown_file)
@@ -158,6 +165,7 @@ defmodule UwUBlog.Post do
     }
   end
 
+  @decorate trace()
   def permalink_to_dir(permalink) do
     case get_post(permalink) do
       {:ok, post} ->
@@ -168,6 +176,7 @@ defmodule UwUBlog.Post do
     end
   end
 
+  @decorate trace()
   def standardize_frontmatter(markdown_file, frontmatter, content) do
     permalink = frontmatter["permalink"]
 
@@ -200,10 +209,12 @@ defmodule UwUBlog.Post do
     {frontmatter, permalink}
   end
 
+  @decorate trace()
   def permalink_from_filename(markdown_file) do
     String.replace(String.replace(Path.basename(markdown_file), ".md", ""), "_", "-")
   end
 
+  @decorate trace()
   def parse_frontmatter(markdown_file, "---\n" <> markdown) do
     with [frontmatter_yaml, rest] <- String.split(markdown, "---\n", parts: 2, trim: true),
          {:ok, frontmatter} <- YamlElixir.read_from_string(frontmatter_yaml) do
