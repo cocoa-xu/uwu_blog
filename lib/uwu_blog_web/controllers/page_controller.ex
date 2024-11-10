@@ -1,6 +1,8 @@
 defmodule UwUBlogWeb.PageController do
   @moduledoc false
 
+  alias UwUBlog.PostCollection
+
   use UwUBlog.Tracing.Decorator
   use UwUBlogWeb, :controller
 
@@ -11,7 +13,7 @@ defmodule UwUBlogWeb.PageController do
 
   @decorate trace()
   def post(conn, %{"permalink" => permalink}) do
-    case UwUBlog.Post.get_post(permalink) do
+    case PostCollection.get_post(permalink) do
       {:ok, post} ->
         render(conn, "post.html", post: post)
 
@@ -27,7 +29,7 @@ defmodule UwUBlogWeb.PageController do
 
   @decorate trace()
   def assets(conn, _info = %{"permalink" => permalink, "assets" => assets}) do
-    case UwUBlog.Post.permalink_to_dir(permalink) do
+    case PostCollection.permalink_to_dir(permalink) do
       {:ok, post_dir} ->
         asset_path = Path.expand(Path.join(post_dir, Path.expand(Path.join(["/"] ++ assets))))
 

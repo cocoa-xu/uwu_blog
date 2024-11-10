@@ -52,18 +52,16 @@ defmodule UwUBlog.MixProject do
       {:phoenix_view, "~> 2.0"},
       {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
-      {:sentry, "~> 10.2.0"},
       {:swoosh, "~> 1.3"},
       {:yaml_elixir, "~> 2.9"},
 
-      # dev
+      # dev/test
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
-
-      # test
       {:floki, ">= 0.30.0", only: :test},
 
       # Telemetry and metrics
+      {:sentry, "~> 10.2.0"},
       {:opentelemetry, "~> 1.0"},
       {:opentelemetry_api, "~> 1.0"},
       {:opentelemetry_cowboy, "~> 0.3"},

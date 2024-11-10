@@ -26,7 +26,7 @@ defmodule UwUBlog.Application do
       # {FaviconCafe.Worker, arg},
       # Start to serve requests, typically the last entry
       UwUBlogWeb.Endpoint,
-      UwUBlog.Post,
+      {UwUBlog.PostCollection, name: UwUBlog.PostCollection},
       UwUBlogWeb.Plugs.NowPlaying
     ]
 
