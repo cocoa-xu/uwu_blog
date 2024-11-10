@@ -14,18 +14,20 @@ defmodule UwUBlog.Application do
     :ok = start_otel()
 
     children = [
-      # Start the Ecto repository
-      UwUBlog.Repo,
-      # Start the Telemetry supervisor
       UwUBlogWeb.Telemetry,
-      # Start the PubSub system
+      UwUBlog.Repo,
+      {Ecto.Migrator,
+       repos: Application.fetch_env!(:uwu_blog, :ecto_repos), skip: skip_migrations?()},
+      {DNSCluster, query: Application.get_env(:uwu_blog, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: UwUBlog.PubSub},
-      # Start the Endpoint (http/https)
+      # Start the Finch HTTP client for sending emails
+      {Finch, name: FaviconCafe.Finch},
+      # Start a worker by calling: FaviconCafe.Worker.start_link(arg)
+      # {FaviconCafe.Worker, arg},
+      # Start to serve requests, typically the last entry
       UwUBlogWeb.Endpoint,
       UwUBlog.Post,
       UwUBlogWeb.Plugs.NowPlaying
-      # Start a worker by calling: UwUBlog.Worker.start_link(arg)
-      # {UwUBlog.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -36,14 +38,21 @@ defmodule UwUBlog.Application do
 
   @spec start_otel() :: :ok
   def start_otel do
-    OpentelemetryEcto.setup([:favicon_cafe, :repo], db_statement: :enabled)
+    OpentelemetryEcto.setup([:uwu_blog, :repo], db_statement: :enabled)
     :opentelemetry_cowboy.setup()
     OpentelemetryPhoenix.setup(adapter: :cowboy2)
   end
 
+  # Tell Phoenix to update the endpoint configuration
+  # whenever the application is updated.
   @impl true
   def config_change(changed, _new, removed) do
     UwUBlogWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp skip_migrations? do
+    # By default, sqlite migrations are run when using a release
+    System.get_env("RELEASE_NAME") != nil
   end
 end

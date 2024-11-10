@@ -17,37 +17,51 @@ defmodule UwUBlogWeb do
   and import those modules here.
   """
 
-  def controller do
-    quote do
-      use Phoenix.Controller, namespace: UwUBlogWeb
+  def static_paths, do: ~w(
+    assets
+    fonts
+    images
+    favicon.ico
+    robots.txt
+  )
 
+  def router do
+    quote do
+      use Phoenix.Router, helpers: false
+
+      import Phoenix.Controller
+      import Phoenix.LiveView.Router
+
+      # Import common connection and controller functions to use in pipelines
       import Plug.Conn
-      import UwUBlogWeb.Gettext
-      alias UwUBlogWeb.Router.Helpers, as: Routes
     end
   end
 
-  def view do
+  def channel do
     quote do
-      use Phoenix.View,
-        root: "lib/uwu_blog_web/templates",
-        namespace: UwUBlogWeb
+      use Phoenix.Channel
+    end
+  end
 
-      # Import convenience functions from controllers
-      import Phoenix.Controller,
-        only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1]
+  def controller do
+    quote do
+      use Phoenix.Controller,
+        formats: [:html, :json],
+        layouts: [html: UwUBlogWeb.Layouts]
 
-      # Include shared imports and aliases for views
-      unquote(view_helpers())
+      import UwUBlogWeb.Gettext
+      import Plug.Conn
+
+      unquote(verified_routes())
     end
   end
 
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {UwUBlogWeb.LayoutView, "live.html"}
+        layout: {UwUBlogWeb.Layouts, :app}
 
-      unquote(view_helpers())
+      unquote(html_helpers())
     end
   end
 
@@ -55,49 +69,45 @@ defmodule UwUBlogWeb do
     quote do
       use Phoenix.LiveComponent
 
-      unquote(view_helpers())
+      unquote(html_helpers())
     end
   end
 
-  def component do
+  def html do
     quote do
       use Phoenix.Component
 
-      unquote(view_helpers())
+      # Import convenience functions from controllers
+      import Phoenix.Controller,
+        only: [get_csrf_token: 0, view_module: 1, view_template: 1]
+
+      # Include general helpers for rendering HTML
+      unquote(html_helpers())
     end
   end
 
-  def router do
+  defp html_helpers do
     quote do
-      use Phoenix.Router
-
-      import Plug.Conn
-      import Phoenix.Controller
-      import Phoenix.LiveView.Router
-    end
-  end
-
-  def channel do
-    quote do
-      use Phoenix.Channel
+      import UwUBlogWeb.CoreComponents
       import UwUBlogWeb.Gettext
+      # HTML escaping functionality
+      import Phoenix.HTML
+      # Core UI components and translation
+
+      # Shortcut for generating JS commands
+      alias Phoenix.LiveView.JS
+
+      # Routes generation with the ~p sigil
+      unquote(verified_routes())
     end
   end
 
-  defp view_helpers do
+  def verified_routes do
     quote do
-      # Use all HTML functionality (forms, tags, etc)
-      use Phoenix.HTML
-
-      # Import LiveView and .heex helpers (live_render, live_patch, <.form>, etc)
-      import Phoenix.LiveView.Helpers
-
-      # Import basic rendering functionality (render, render_layout, etc)
-      import Phoenix.View
-
-      import UwUBlogWeb.ErrorHelpers
-      import UwUBlogWeb.Gettext
-      alias UwUBlogWeb.Router.Helpers, as: Routes
+      use Phoenix.VerifiedRoutes,
+        endpoint: UwUBlogWeb.Endpoint,
+        router: UwUBlogWeb.Router,
+        statics: UwUBlogWeb.static_paths()
     end
   end
 

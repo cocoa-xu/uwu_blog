@@ -1,5 +1,5 @@
 <%= if Map.has_key?(@post.frontmatter, "template") do %>
-  <%= render(UwUBlogWeb.PageView, @post.frontmatter["template"]["using"], post: @post) %>
+  <.embedded post={@post} template={@post.frontmatter["template"]} />
 <% else %>
   <article class="column post-section-title">
     <h2><a href={"/post/#{@post.frontmatter["permalink"]}"}><%= @post.frontmatter["title"] %></a></h2>

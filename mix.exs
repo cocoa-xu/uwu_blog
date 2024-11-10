@@ -4,7 +4,7 @@ defmodule UwUBlog.MixProject do
   def project do
     [
       app: :uwu_blog,
-      version: "0.1.0",
+      version: "0.2.0",
       elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
@@ -34,12 +34,16 @@ defmodule UwUBlog.MixProject do
 
   defp deps do
     [
+      {:bandit, "~> 1.2"},
       {:decorator, "~> 1.4"},
+      {:dns, "~> 2.4.0"},
+      {:dns_cluster, "~> 0.1.1"},
       {:earmark, "~> 1.4"},
       {:ecto_sql, "~> 3.6"},
-      {:gettext, "~> 0.18"},
+      {:gettext, "~> 0.24.0"},
       {:hackney, "~> 1.8"},
       {:jason, "~> 1.2"},
+      {:live_toast, "~> 0.6.4"},
       {:phoenix, "~> 1.7"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 4.0"},

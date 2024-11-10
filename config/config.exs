@@ -7,15 +7,15 @@
 # General application configuration
 import Config
 
-config :uwu_blog,
-  ecto_repos: [UwUBlog.Repo]
-
-# Configures the endpoint
-config :uwu_blog, UwUBlogWeb.Endpoint,
-  url: [host: "localhost"],
-  render_errors: [view: UwUBlogWeb.ErrorView, accepts: ~w(html json), layout: false],
-  pubsub_server: UwUBlog.PubSub,
-  live_view: [signing_salt: "5QTI/rFH"]
+# Configure esbuild (the version is required)
+config :esbuild,
+  version: "0.17.11",
+  favicon_cafe: [
+    args:
+      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ]
 
 # Configures the mailer
 #
@@ -26,18 +26,20 @@ config :uwu_blog, UwUBlogWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :uwu_blog, UwUBlog.Mailer, adapter: Swoosh.Adapters.Local
 
-# Swoosh API client is needed for adapters other than SMTP.
-config :swoosh, :api_client, false
+# Configures the endpoint
+config :uwu_blog, UwUBlogWeb.Endpoint,
+  url: [host: "localhost"],
+  adapter: Bandit.PhoenixAdapter,
+  render_errors: [
+    formats: [html: UwUBlogWeb.ErrorHTML, json: UwUBlogWeb.ErrorJSON],
+    layout: false
+  ],
+  pubsub_server: UwUBlog.PubSub,
+  live_view: [signing_salt: "5QTI/rFH"]
 
-# Configure esbuild (the version is required)
-config :esbuild,
-  version: "0.17.11",
-  favicon_cafe: [
-    args:
-      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
-    cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
-  ]
+config :uwu_blog,
+  ecto_repos: [UwUBlog.Repo],
+  generators: [timestamp_type: :utc_datetime]
 
 # Configures Elixir's Logger
 config :logger, :console,

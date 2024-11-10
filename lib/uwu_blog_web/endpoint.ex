@@ -8,10 +8,13 @@ defmodule UwUBlogWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_uwu_blog_key",
-    signing_salt: "sPAhTatZ"
+    signing_salt: "sPAhTatZ",
+    same_site: "Lax"
   ]
 
-  socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
+  socket "/live", Phoenix.LiveView.Socket,
+    websocket: [connect_info: [session: @session_options]],
+    longpoll: [connect_info: [session: @session_options]]
 
   socket "/socket", UwUBlogWeb.NowPlayingSocket,
     websocket: true,

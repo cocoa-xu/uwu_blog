@@ -15,6 +15,19 @@ defmodule UwUBlog.Tracing.Decorator do
         module
         |> Macro.to_string()
         |> String.split(".")
+        |> Enum.map(fn
+          "UwUBlogWeb" ->
+            "uwu_blog_web"
+
+          "UwUBlog" ->
+            "uwu_blog"
+
+          "UwU" ->
+            "uwu"
+
+          x ->
+            x
+        end)
         |> Enum.map(&Macro.underscore/1)
         |> Enum.map_join(".", & &1)
 

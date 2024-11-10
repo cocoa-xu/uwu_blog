@@ -1,10 +1,15 @@
 defmodule UwUBlogWeb.PageController do
+  @moduledoc false
+
+  use UwUBlog.Tracing.Decorator
   use UwUBlogWeb, :controller
 
+  @decorate trace()
   def index(conn, _) do
     render(conn, "index.html")
   end
 
+  @decorate trace()
   def post(conn, %{"permalink" => permalink}) do
     case UwUBlog.Post.get_post(permalink) do
       {:ok, post} ->
@@ -20,6 +25,7 @@ defmodule UwUBlogWeb.PageController do
     Enum.any?(Enum.map([".jpg", ".jpeg", ".png", ".webp"], &String.ends_with?(lower, &1)))
   end
 
+  @decorate trace()
   def assets(conn, _info = %{"permalink" => permalink, "assets" => assets}) do
     case UwUBlog.Post.permalink_to_dir(permalink) do
       {:ok, post_dir} ->

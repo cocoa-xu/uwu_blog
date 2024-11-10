@@ -5,6 +5,10 @@ import Config
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
+
+# In test we don't send emails.
+config :uwu_blog, UwUBlog.Mailer, adapter: Swoosh.Adapters.Test
+
 config :uwu_blog, UwUBlog.Repo,
   username: "postgres",
   password: "postgres",
@@ -20,11 +24,11 @@ config :uwu_blog, UwUBlogWeb.Endpoint,
   secret_key_base: "xF2/vbb/5R/pAj1NZBuPzPXUm5hOg4a+3VVz5AhuNpobdi4q04bfHn7rcmX/mJDR",
   server: false
 
-# In test we don't send emails.
-config :uwu_blog, UwUBlog.Mailer, adapter: Swoosh.Adapters.Test
-
-# Print only warnings and errors during test
-config :logger, level: :warn
-
-# Initialize plugs at runtime for faster test compilation
+config :logger, level: :warning
 config :phoenix, :plug_init_mode, :runtime
+
+config :phoenix_live_view,
+  # Disable swoosh api client as it is only required for production adapters.
+  enable_expensive_runtime_checks: true
+
+config :swoosh, :api_client, false

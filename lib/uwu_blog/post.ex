@@ -193,7 +193,7 @@ defmodule UwUBlog.Post do
     frontmatter =
       if excerpt == nil do
         excerpt =
-          case EarmarkParser.as_ast(content) do
+          case Earmark.Parser.as_ast(content) do
             {:ok, [first | _], _} ->
               Earmark.Transform.transform(first)
 
