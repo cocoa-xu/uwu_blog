@@ -12,6 +12,11 @@ defmodule UwUBlogWeb.PageController do
   end
 
   @decorate trace()
+  def about(conn, _) do
+    render(conn, "about.html")
+  end
+
+  @decorate trace()
   def post(conn, %{"permalink" => permalink}) do
     case PostCollection.get_post(permalink) do
       {:ok, post} ->

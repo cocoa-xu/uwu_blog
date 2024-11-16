@@ -58,6 +58,8 @@ defmodule UwUBlog.MixProject do
       # dev/test
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
+      {:styler, "~> 1.0.0", only: :dev, runtime: false},
       {:floki, ">= 0.30.0", only: :test},
 
       # Telemetry and metrics
@@ -76,11 +78,17 @@ defmodule UwUBlog.MixProject do
 
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup"],
+      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"]
+      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.build": ["tailwind uwu_blog", "esbuild uwu_blog"],
+      "assets.deploy": [
+        "tailwind uwu_blog --minify",
+        "esbuild uwu_blog --minify",
+        "phx.digest"
+      ]
     ]
   end
 end

@@ -10,6 +10,10 @@ defmodule UwUBlog do
       %{
         name: "Home",
         href: "/"
+      },
+      %{
+        name: "About",
+        href: "/about"
       }
     ]
   end

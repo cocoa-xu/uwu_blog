@@ -26,7 +26,8 @@ config :uwu_blog, UwUBlogWeb.Endpoint,
   secret_key_base: "Wi92d6vKAdL399JPb0Fbgpp5289MHkAFsDIkIdjKUrFezoxjK/Sb+G9VCLCEzCPD",
   watchers: [
     # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    esbuild: {Esbuild, :install_and_run, [:uwu_blog, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:uwu_blog, ~w(--watch)]}
   ]
 
 config :uwu_blog, UwUBlogWeb.Plugs.NowPlaying, apikey: "NOWPLAYINGAPIKEY"
@@ -59,10 +60,9 @@ config :uwu_blog, UwUBlogWeb.Plugs.NowPlaying, apikey: "NOWPLAYINGAPIKEY"
 config :uwu_blog, UwUBlogWeb.Endpoint,
   live_reload: [
     patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/uwu_blog_web/(live|views)/.*(ex)$",
-      ~r"lib/uwu_blog_web/templates/.*(eex)$"
+      ~r"lib/uwu_blog/(controllers|live|components)/.*(ex|heex)$"
     ]
   ]
 

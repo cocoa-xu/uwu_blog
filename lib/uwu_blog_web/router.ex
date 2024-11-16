@@ -26,6 +26,7 @@ defmodule UwUBlogWeb.Router do
   scope "/", UwUBlogWeb do
     pipe_through :browser
     get "/", PageController, :index
+    get "/about", PageController, :about
     get "/post/:permalink", PageController, :post
     get "/post/:permalink/*assets", PageController, :assets
   end

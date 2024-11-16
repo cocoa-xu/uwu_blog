@@ -1,5 +1,4 @@
 // We import the CSS which is extracted to its own file by esbuild.
-import "../css/app.css"
 
 // Phoenix channels
 import "./now_playing_socket.js"

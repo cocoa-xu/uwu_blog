@@ -2,6 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="csrf-token" content={get_csrf_token()}>
@@ -11,14 +13,12 @@
   </head>
   <body class="line-numbers">
     <header>
-      <section class="container">
-        <nav>
-          <ul>
-            <%= for item <- UwUBlog.nav_items() do %>
-            <li><a href={"#{item.href}"}><%= item.name %></a></li>
-            <% end %>
-          </ul>
-        </nav>
+      <section class="h-12">
+        <div class="flex flex-row place-content-evenly w-32 h-8 mt-3 font-merriweather">
+          <%= for item <- UwUBlog.nav_items() do %>
+          <div class="px-2"><a href={"#{item.href}"}><%= item.name %></a></div>
+          <% end %>
+        </div>
       </section>
     </header>
     <%= @inner_content %>

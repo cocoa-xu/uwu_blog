@@ -1,23 +1,23 @@
-<article class="column post-section-title">
+<div data-el-posts>
   <h2>Recent Posts</h2>
   <div class="cards">
     <%= for post <- UwUBlog.PostCollection.get_all_posts() do %>
     <div class="card">
-    <h3 class="post-title"><a href={"/post/#{post.frontmatter["permalink"]}"}><%= post.frontmatter["title"] %></a></h3>
-    <span class="post-time"><%= post.frontmatter["date"] %></span>
-    <p class="post-excerpt">
-      <%= raw post.frontmatter["excerpt"] %>
-    </p>
-    <div class="options">
-      <span>
-      <a class="post-readmore" href={"/post/#{post.frontmatter["permalink"]}"}>Read Full Blog</a>
-      </span>
-    </div>
+      <h3 class="post-title"><a href={"/post/#{post.frontmatter["permalink"]}"}><%= post.frontmatter["title"] %></a></h3>
+      <span class="post-time"><%= post.frontmatter["date"] %></span>
+      <p class="post-excerpt">
+        <%= raw post.frontmatter["excerpt"] %>
+      </p>
+      <div class="options">
+        <span>
+        <a class="post-readmore" href={"/post/#{post.frontmatter["permalink"]}"}>Read Full Blog</a>
+        </span>
+      </div>
     </div>
     <% end %>
   </div>
-</article>
-<article id="now-playing" class="column post-section">
+</div>
+<div data-el-now-playing class="post-section">
   <h2 class="kira">Now Playing</h2>
   <div id="now-playing-list">
     <% now_playing = UwUBlogWeb.Plugs.NowPlaying.get() %>
@@ -43,12 +43,12 @@
       <% end %>
     <% end %>
   </div>
-</article>
-<article class="column post-section kira links">
-  <h2 class="kira">☆〜（ゝ。∂）</h2>
-  <ul>
+</div>
+<div class="post-section kira links">
+  <h2 class="kira mb-2">☆〜（ゝ。∂）</h2>
+  <div class="flex flex-col">
     <%= for k <- UwUBlog.kira do %>
-    <li><a href={"#{k.link}"} target="_blank" rel="noreferrer noopener"><%= raw k.name %></a></li>
+    <div class="pl-3 py-1"><a href={"#{k.link}"} target="_blank" rel="noreferrer noopener"><%= raw k.name %></a></div>
     <% end %>
-  </ul>
-</article>
+  </div>
+</div>
