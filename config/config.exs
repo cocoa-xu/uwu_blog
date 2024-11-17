@@ -53,7 +53,6 @@ config :opentelemetry,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-
 # Configure tailwind (the version is required)
 config :tailwind,
   version: "3.4.3",

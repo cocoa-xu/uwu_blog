@@ -52,6 +52,7 @@ defmodule UwUBlog.MixProject do
       {:phoenix_view, "~> 2.0"},
       {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
+      {:req, "~> 0.5"},
       {:swoosh, "~> 1.3"},
       {:yaml_elixir, "~> 2.9"},
 

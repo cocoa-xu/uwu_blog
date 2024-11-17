@@ -42,6 +42,28 @@ if honeycomb_api_key do
     ]
 end
 
+storage_base_url = System.get_env("UWUBLOG_STORAGE_ENDPOINT")
+
+if storage_base_url do
+  config :uwu_blog, UwUBlog.Storage,
+    provider:
+      {UwUBlog.Stroage.C1,
+       base_url: storage_base_url,
+       public_url: "https://assets.uwucocoa.moe",
+       bucket:
+         System.get_env("UWUBLOG_STORAGE_BUCKET") || raise("UWUBLOG_STORAGE_BUCKET is missing"),
+       aws_sigv4: [
+         access_key_id:
+           System.get_env("UWUBLOG_STORAGE_ACCESS_KEY_ID") ||
+             raise("UWUBLOG_STORAGE_ACCESS_KEY_ID is missing"),
+         secret_access_key:
+           System.get_env("UWUBLOG_STORAGE_SECRET_ACCESS_KEY") ||
+             raise("UWUBLOG_STORAGE_SECRET_ACCESS_KEY is missing"),
+         service: "s3",
+         region: "auto"
+       ]}
+end
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
