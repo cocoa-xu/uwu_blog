@@ -5,7 +5,7 @@ defmodule UwUBlog.Stroage.C1 do
           {:ok, String.t()} | {:error, String.t()}
   def put(config, file, path)
       when is_binary(file) and is_binary(path) do
-    req = Req.new(dbg(Keyword.take(config, [:base_url, :aws_sigv4])))
+    req = Req.new(Keyword.take(config, [:base_url, :aws_sigv4]))
     bucket = config[:bucket]
     url = Path.join(["/", bucket, path])
 
