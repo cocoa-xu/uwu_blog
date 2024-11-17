@@ -75,20 +75,19 @@ if config_env() == :prod do
   maybe_ipv6 = if System.get_env("ECTO_IPV6"), do: [:inet6], else: []
 
   config :uwu_blog, UwUBlog.Repo,
-    # ssl: true,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
     stacktrace: true,
     show_sensitive_data_on_connection_error: true,
-    # ssl: [
-    #   verify: :verify_peer,
-    #   cacerts: :public_key.cacerts_get(),
-    #   depth: 3,
-    #   server_name_indication: String.to_charlist(URI.parse(database_url).host),
-    #   customize_hostname_check: [
-    #     match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
-    #   ]
-    # ],
+    ssl: [
+      verify: :verify_peer,
+      cacerts: :public_key.cacerts_get(),
+      depth: 3,
+      server_name_indication: String.to_charlist(URI.parse(database_url).host),
+      customize_hostname_check: [
+        match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+      ]
+    ],
     socket_options: maybe_ipv6
 
   config :uwu_blog, UwUBlogWeb.Plugs.NowPlaying,
