@@ -68,8 +68,6 @@ defmodule UwUBlog.Blog.PlayHistory do
   end
 
   def load_history(number) do
-    dbg(number)
-
     Repo.all(
       from p in __MODULE__,
         order_by: [desc: p.inserted_at],
