@@ -60,7 +60,7 @@ defmodule UwUBlog.Blog.Artwork do
 
   def upload_artwork(data, checksum, type) do
     filename = "#{checksum}.#{type}"
-    key = "/arkworks/#{filename}"
+    key = "/artworks/#{filename}"
 
     if Storage.available?() do
       Storage.put_data(data, key)

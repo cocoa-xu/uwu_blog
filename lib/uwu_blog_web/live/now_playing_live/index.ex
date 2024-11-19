@@ -37,7 +37,7 @@ defmodule UwUBlogWeb.NowPlayingLive.Index do
     track
     |> Map.from_struct()
     |> Map.put(:currentPlaying?, Map.get(track, :currentPlaying?, false))
-    |> Map.put(:arkwork_url, if(artwork, do: artwork.public_url, else: "/assets/artwork.jpg"))
+    |> Map.put(:artwork_url, if(artwork, do: artwork.public_url, else: "/assets/artwork.jpg"))
   end
 
   @impl Phoenix.LiveView
@@ -70,7 +70,7 @@ defmodule UwUBlogWeb.NowPlayingLive.Index do
       <div class={
         ["bg-[#FFF5F5]", "bg-opacity-35", "px-8", "pt-8", "rounded-lg", "shadow-sm", "w-80", (if @item.currentPlaying?, do: "pb-4", else: "pb-10")]
       }>
-      <img src={@item.arkwork_url} class="w-64 h-64 mx-auto rounded-lg mb-4 shadow-lg shadow-pink-50" alt={@item.title}>
+      <img src={@item.artwork_url} class="w-64 h-64 mx-auto rounded-lg mb-4 shadow-lg shadow-pink-50" alt={@item.title}>
       <h2 class={
         ["text-xl font-semibold text-center", (if @item.currentPlaying?, do: "", else: "pt-6")]
       }><%= @item.title %></h2>
