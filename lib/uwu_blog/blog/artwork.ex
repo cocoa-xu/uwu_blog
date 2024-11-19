@@ -38,13 +38,10 @@ defmodule UwUBlog.Blog.Artwork do
         {:ok, public_url} ->
           Logger.info("Uploaded artwork, public_url=#{public_url}")
 
-          artwork =
-            Repo.insert!(%__MODULE__{
-              public_url: public_url,
-              checksum: checksum
-            })
-
-          {:ok, artwork}
+          case Repo.insert(%__MODULE__{public_url: public_url, checksum: checksum}) do
+            {:ok, artwork} -> {:ok, artwork}
+            {:error, _} -> {:ok, Repo.get_by(__MODULE__, checksum: checksum)}
+          end
 
         {:error, reason} ->
           Logger.error("Error uploading artwork: #{reason}")
