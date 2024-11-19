@@ -1,8 +1,5 @@
 // We import the CSS which is extracted to its own file by esbuild.
 
-// Phoenix channels
-import "./now_playing_socket.js"
-
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.

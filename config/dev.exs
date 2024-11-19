@@ -30,7 +30,7 @@ config :uwu_blog, UwUBlogWeb.Endpoint,
     tailwind: {Tailwind, :install_and_run, [:uwu_blog, ~w(--watch)]}
   ]
 
-config :uwu_blog, UwUBlogWeb.Plugs.NowPlaying, apikey: "NOWPLAYINGAPIKEY"
+config :uwu_blog, UwUBlog.NowPlaying, apikey: "NOWPLAYINGAPIKEY"
 
 # ## SSL Support
 #

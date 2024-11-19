@@ -14,13 +14,9 @@ defmodule UwUBlogWeb.Router do
     plug :accepts, ["json"]
   end
 
-  pipeline :now_playing_api do
-    plug UwUBlogWeb.Plugs.NowPlaying, :fetch
-  end
-
   scope "/now-playing", UwUBlogWeb do
     pipe_through :api
-    post "/", Plugs.NowPlaying, :update
+    post "/", PageController, :update_track
   end
 
   scope "/", UwUBlogWeb do
@@ -29,6 +25,10 @@ defmodule UwUBlogWeb.Router do
     get "/about", PageController, :about
     get "/post/:permalink", PageController, :post
     get "/post/:permalink/*assets", PageController, :assets
+
+    live_session :now_playing do
+      live "/now_playing", NowPlayingLive.Index
+    end
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

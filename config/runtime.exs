@@ -90,7 +90,7 @@ if config_env() == :prod do
     ],
     socket_options: maybe_ipv6
 
-  config :uwu_blog, UwUBlogWeb.Plugs.NowPlaying,
+  config :uwu_blog, UwUBlog.NowPlaying,
     apikey:
       System.get_env("NOW_PLAYING_APIKEY") ||
         raise("""

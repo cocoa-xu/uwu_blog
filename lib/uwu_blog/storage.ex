@@ -18,4 +18,14 @@ defmodule UwUBlog.Storage do
         {:error, "No storage provider configured"}
     end
   end
+
+  def put_data(data, path) do
+    case get_provider() do
+      {provider, config} ->
+        provider.put_data(config, data, path)
+
+      _ ->
+        {:error, "No storage provider configured"}
+    end
+  end
 end

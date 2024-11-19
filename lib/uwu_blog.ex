@@ -14,6 +14,10 @@ defmodule UwUBlog do
       %{
         name: "About",
         href: "/about"
+      },
+      %{
+        name: "Now Playing",
+        href: "/now_playing"
       }
     ]
   end

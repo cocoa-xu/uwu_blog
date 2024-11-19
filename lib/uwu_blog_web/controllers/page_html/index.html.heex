@@ -17,33 +17,6 @@
     <% end %>
   </div>
 </div>
-<div data-el-now-playing class="post-section">
-  <h2 class="kira">Now Playing</h2>
-  <div id="now-playing-list">
-    <% now_playing = UwUBlogWeb.Plugs.NowPlaying.get() %>
-    <%= if map_size(now_playing) == 0 do %>
-      <div>Not playing</div>
-    <% else %>
-      <%= for {_, item} <- now_playing do %>
-        <% link = if item["type"] == "youtube", do: """
-        <a href="https://youtube.com/watch?v=#{item["data"]}" target="_about:blank">#{item["title"]}</a>
-        """, else: "" %>
-        <div class="now-playing-item"><%= raw link %>
-          <div class="music__times duration">
-            <div id="music-seek" class="music__seek bar--duration">
-              <% width = if item["duration"] > 0, do: Float.round(item["current_time"] / item["duration"] * 100.0, 1), else: 100 %>
-              <span class="music__seek_handle" style={"width: #{width}%"}></span>
-            </div>
-            <span id="music-current-time" class="music__current_time duration__current">
-              <%= Time.to_string(Time.add(~T[00:00:00], trunc(item["current_time"]) * 1000, :millisecond)) %>
-            </span>
-            <span id="music-duration" class="music__duration duration__until"><%= Time.to_string(Time.add(~T[00:00:00], trunc(item["duration"]) * 1000, :millisecond)) %></span>
-          </div>
-        </div>
-      <% end %>
-    <% end %>
-  </div>
-</div>
 <div class="post-section kira links">
   <h2 class="kira mb-2">☆〜（ゝ。∂）</h2>
   <div class="flex flex-col">

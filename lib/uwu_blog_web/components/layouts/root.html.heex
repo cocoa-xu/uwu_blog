@@ -14,7 +14,7 @@
   <body class="line-numbers">
     <header>
       <section class="h-12">
-        <div class="flex flex-row place-content-evenly w-32 h-8 mt-3 font-merriweather">
+        <div class="flex flex-row place-content-evenly h-8 mt-3 font-merriweather">
           <%= for item <- UwUBlog.nav_items() do %>
           <div class="px-2"><a href={"#{item.href}"}><%= item.name %></a></div>
           <% end %>

@@ -27,7 +27,7 @@ defmodule UwUBlog.Application do
       # Start to serve requests, typically the last entry
       UwUBlogWeb.Endpoint,
       {UwUBlog.PostCollection, name: UwUBlog.PostCollection},
-      UwUBlogWeb.Plugs.NowPlaying
+      {UwUBlog.NowPlaying, name: UwUBlog.NowPlaying}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

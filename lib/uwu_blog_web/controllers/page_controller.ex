@@ -2,6 +2,7 @@ defmodule UwUBlogWeb.PageController do
   @moduledoc false
 
   alias UwUBlog.PostCollection
+  alias UwUBlog.NowPlaying
 
   use UwUBlog.Tracing.Decorator
   use UwUBlogWeb, :controller
@@ -14,6 +15,13 @@ defmodule UwUBlogWeb.PageController do
   @decorate trace()
   def about(conn, _) do
     render(conn, "about.html")
+  end
+
+  @decorate trace()
+  def update_track(conn, params) do
+    {status_code, resp} = NowPlaying.update_track(params)
+
+    send_resp(conn, status_code, Jason.encode!(resp))
   end
 
   @decorate trace()
