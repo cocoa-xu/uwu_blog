@@ -5,16 +5,12 @@ defmodule UwUBlog.Blog.Artwork do
 
   alias UwUBlog.Repo
   alias UwUBlog.Storage
-  alias UwUBlog.Blog.Track
 
   require Logger
 
-  @primary_key {:id, :id, autogenerate: true}
   schema "artworks" do
     field :public_url, :string
     field :checksum, :string
-
-    belongs_to :track, Track
 
     timestamps()
   end
@@ -32,7 +28,7 @@ defmodule UwUBlog.Blog.Artwork do
     Repo.get_by(__MODULE__, checksum: checksum)
   end
 
-  def update_artwork(track, data, checksum, type)
+  def update_artwork(data, checksum, type)
       when is_binary(data) and is_binary(checksum) and is_binary(type) do
     data = Base.decode64!(data)
     data_checksum = checksum(data)
@@ -42,15 +38,13 @@ defmodule UwUBlog.Blog.Artwork do
         {:ok, public_url} ->
           Logger.info("Uploaded artwork, public_url=#{public_url}")
 
-          artwork = %__MODULE__{
-            public_url: public_url,
-            checksum: checksum,
-            track_id: track.id
-          }
+          artwork =
+            Repo.insert!(%__MODULE__{
+              public_url: public_url,
+              checksum: checksum
+            })
 
-          artwork = Repo.insert!(artwork)
-          track = Repo.get(Track, track.id) |> Repo.preload(:artwork)
-          {:ok, {track, artwork}}
+          {:ok, artwork}
 
         {:error, reason} ->
           Logger.error("Error uploading artwork: #{reason}")

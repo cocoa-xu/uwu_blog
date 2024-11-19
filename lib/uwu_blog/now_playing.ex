@@ -6,6 +6,7 @@ defmodule UwUBlog.NowPlaying do
 
   alias UwUBlog.Blog.Artwork
   alias UwUBlog.Blog.Track
+  alias UwUBlog.Blog.PlayHistory
 
   require Logger
 
@@ -89,15 +90,18 @@ defmodule UwUBlog.NowPlaying do
   @impl GenServer
   @decorate trace()
   def handle_call(:get_tracks, _from, state) do
-    current_track =
+    now_playing =
       if now_playing = state.now_playing do
-        now_playing.track
-        |> Map.put(:currentPlaying?, true)
-        |> Map.put(:position, now_playing.position)
-        |> Map.put(:duration, now_playing.duration)
+        current_track =
+          now_playing.track
+          |> Map.put(:currentPlaying?, true)
+          |> Map.put(:position, now_playing.position)
+          |> Map.put(:duration, now_playing.duration)
+
+        %{track: current_track, artwork: now_playing.artwork}
       end
 
-    {:reply, %{now_playing: current_track, play_history: state.play_history}, state}
+    {:reply, %{now_playing: now_playing, play_history: state.play_history}, state}
   end
 
   @decorate trace()
@@ -109,48 +113,21 @@ defmodule UwUBlog.NowPlaying do
       album: params["album"]
     }
 
+    track = Track.insert_or_ignore(track)
+
     artwork_checksum = params["artwork_checksum"]
+    artwork = Artwork.get_artwork(artwork_checksum)
 
-    {same_track?, artwork} =
-      if state.now_playing do
-        same_track? = Track.same_track?(state.now_playing.track, track)
+    result = PlayHistory.update_now_playing(track, artwork)
 
-        artwork =
-          if same_track? && state.now_playing.track.artwork do
-            artwork = state.now_playing.track.artwork
-
-            if artwork.checksum != artwork_checksum do
-              Artwork.get_artwork(artwork_checksum)
-            else
-              artwork
-            end
-          else
-            Artwork.get_artwork(artwork_checksum)
-          end
-
-        {same_track?, artwork}
+    state =
+      if result.updated? do
+        reload(state)
       else
-        {false, Artwork.get_artwork(artwork_checksum)}
+        state
       end
 
     resp = {200, %{has_artwork: not is_nil(artwork) || artwork_checksum == "no_artwork"}}
-
-    {result, state} =
-      if same_track? do
-        {%{track: state.now_playing.track}, state}
-      else
-        track = %{track | artwork: artwork}
-        result = Track.update_now_playing(track)
-
-        state =
-          if result.play_history_changed do
-            reload(state)
-          else
-            state
-          end
-
-        {result, state}
-      end
 
     Phoenix.PubSub.broadcast(
       UwUBlog.PubSub,
@@ -162,7 +139,8 @@ defmodule UwUBlog.NowPlaying do
      %{
        state
        | now_playing: %{
-           track: result.track,
+           track: track,
+           artwork: artwork,
            duration: params["duration"],
            position: params["position"]
          },
@@ -175,12 +153,19 @@ defmodule UwUBlog.NowPlaying do
         _from,
         state = %{expecting_checksum: checksum}
       ) do
-    track = state.now_playing.track
+    case Artwork.update_artwork(data, checksum, type) do
+      {:ok, artwork} ->
+        track = state.now_playing.track
+        result = PlayHistory.update_now_playing(track, artwork)
 
-    case Artwork.update_artwork(track, data, checksum, type) do
-      {:ok, {track, artwork}} ->
-        track = %{track | artwork: artwork}
-        state = %{state | now_playing: %{state.now_playing | track: track}}
+        state =
+          if result.updated? do
+            reload(state)
+          else
+            state
+          end
+
+        now_playing = %{state.now_playing | artwork: artwork}
 
         Phoenix.PubSub.broadcast(
           UwUBlog.PubSub,
@@ -188,7 +173,7 @@ defmodule UwUBlog.NowPlaying do
           :now_playing_changed
         )
 
-        {:reply, {200, %{album_updated: true}}, state}
+        {:reply, {200, %{artwork_updated: true}}, %{state | now_playing: now_playing}}
 
       {:error, reason} when is_binary(reason) ->
         {:reply, {403, %{error: reason}}, state}
@@ -205,13 +190,13 @@ defmodule UwUBlog.NowPlaying do
 
   @decorate trace()
   defp reload(state) do
-    %{state | play_history: load_tracks(state.number_of_tracks)}
+    %{state | play_history: load_history(state.number_of_tracks)}
   end
 
   @decorate trace()
-  defp load_tracks(number_of_tracks) do
-    Logger.info("Loading most recent #{number_of_tracks} tracks")
-    Track.get_most_recent_tracks(number_of_tracks)
+  defp load_history(number_of_records) do
+    Logger.info("Loading most recent #{number_of_records} play history records")
+    PlayHistory.load_history(number_of_records)
   end
 
   defp api_key, do: Application.get_env(:uwu_blog, __MODULE__)[:apikey]
