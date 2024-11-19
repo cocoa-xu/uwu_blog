@@ -22,48 +22,30 @@ defmodule UwUBlog.Blog.PlayHistory do
   end
 
   def update_now_playing(%Track{track_id: track_id}, nil) do
-    last =
-      if last = Repo.all(from p in __MODULE__, order_by: [desc: p.inserted_at], limit: 1) do
-        last = hd(last)
+    case Repo.all(from p in __MODULE__, order_by: [desc: p.inserted_at], limit: 1) do
+      [%{track_id: ^track_id} = last| _] -> %{updated?: false, record: last}
+      _ ->
+        record =
+          Repo.insert!(%__MODULE__{
+            track_id: track_id,
+            artwork_checksum: nil
+          })
 
-        if last.track_id == track_id do
-          last
-        end
-      end
-
-    if is_nil(last) do
-      record =
-        Repo.insert!(%__MODULE__{
-          track_id: track_id,
-          artwork_checksum: nil
-        })
-
-      %{updated?: true, record: record}
-    else
-      %{updated?: false, record: last}
+        %{updated?: true, record: record}
     end
   end
 
   def update_now_playing(%Track{track_id: track_id}, %Artwork{checksum: artwork_checksum}) do
-    last =
-      if last = Repo.all(from p in __MODULE__, order_by: [desc: p.inserted_at], limit: 1) do
-        last = hd(last)
+    case Repo.all(from p in __MODULE__, order_by: [desc: p.inserted_at], limit: 1) do
+      [%{track_id: ^track_id, artwork_checksum: ^artwork_checksum} = last| _] -> %{updated?: false, record: last}
+      _ ->
+        record =
+          Repo.insert!(%__MODULE__{
+            track_id: track_id,
+            artwork_checksum: artwork_checksum
+          })
 
-        if last.track_id == track_id and last.artwork_checksum == artwork_checksum do
-          last
-        end
-      end
-
-    if is_nil(last) do
-      record =
-        Repo.insert!(%__MODULE__{
-          track_id: track_id,
-          artwork_checksum: artwork_checksum
-        })
-
-      %{updated?: true, record: record}
-    else
-      %{updated?: false, record: last}
+        %{updated?: true, record: record}
     end
   end
 
