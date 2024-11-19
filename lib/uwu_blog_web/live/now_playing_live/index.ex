@@ -56,7 +56,7 @@ defmodule UwUBlogWeb.NowPlayingLive.Index do
     ~H"""
     <div>
       <div class={
-        ["bg-[#FFF5F5] bg-opacity-35 px-8 pt-8 rounded-lg shadow-sm w-80", (if @item.currentPlaying?, do: "pb-4", else: "pb-10")]
+        ["bg-[#FFF5F5]", "bg-opacity-35", "px-8", "pt-8", "rounded-lg", "shadow-sm", "w-80", (if @item.currentPlaying?, do: "pb-4", else: "pb-10")]
       }>
       <img src={@item.arkwork_url} class="w-64 h-64 mx-auto rounded-lg mb-4 shadow-lg shadow-pink-50" alt={@item.title}>
       <h2 class={
