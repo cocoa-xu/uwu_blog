@@ -11,7 +11,7 @@ defmodule UwUBlogWeb.NowPlayingLive.Index do
     end
 
     %{now_playing: now_playing, play_history: play_history} = NowPlaying.get_tracks()
-    play_history = if Enum.count(play_history) > 0, do: tl(play_history), else: play_history
+    play_history = if now_playing and Enum.count(play_history) > 0, do: tl(play_history), else: play_history
 
     {:ok,
      socket
@@ -44,7 +44,7 @@ defmodule UwUBlogWeb.NowPlayingLive.Index do
   @impl Phoenix.LiveView
   def handle_info(:now_playing_changed, socket) do
     %{now_playing: now_playing, play_history: play_history} = NowPlaying.get_tracks()
-    play_history = if Enum.count(play_history) > 0, do: tl(play_history), else: play_history
+    play_history = if now_playing and Enum.count(play_history) > 0, do: tl(play_history), else: play_history
 
     {:noreply,
      socket
