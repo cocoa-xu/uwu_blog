@@ -23,7 +23,9 @@ defmodule UwUBlog.Blog.PlayHistory do
 
   def update_now_playing(%Track{track_id: track_id}, nil) do
     case Repo.all(from p in __MODULE__, order_by: [desc: p.inserted_at], limit: 1) do
-      [%{track_id: ^track_id} = last| _] -> %{updated?: false, record: last}
+      [%{track_id: ^track_id} = last | _] ->
+        %{updated?: false, record: last}
+
       _ ->
         record =
           Repo.insert!(%__MODULE__{
@@ -37,7 +39,25 @@ defmodule UwUBlog.Blog.PlayHistory do
 
   def update_now_playing(%Track{track_id: track_id}, %Artwork{checksum: artwork_checksum}) do
     case Repo.all(from p in __MODULE__, order_by: [desc: p.inserted_at], limit: 1) do
-      [%{track_id: ^track_id, artwork_checksum: ^artwork_checksum} = last| _] -> %{updated?: false, record: last}
+      [%__MODULE__{track_id: ^track_id, artwork_checksum: current_checksum} = last | _] ->
+        cond do
+          is_nil(current_checksum) ->
+            last = Repo.update!(changeset(last, %{artwork_checksum: artwork_checksum}))
+            %{updated?: true, record: last}
+
+          current_checksum != artwork_checksum ->
+            last =
+              Repo.insert!(%__MODULE__{
+                track_id: track_id,
+                artwork_checksum: artwork_checksum
+              })
+
+            %{updated?: true, record: last}
+
+          true ->
+            %{updated?: false, record: last}
+        end
+
       _ ->
         record =
           Repo.insert!(%__MODULE__{
