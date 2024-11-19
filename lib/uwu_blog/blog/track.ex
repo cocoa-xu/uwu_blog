@@ -17,7 +17,7 @@ defmodule UwUBlog.Blog.Track do
     field :artist, :string
     field :album, :string
 
-    has_one :artwork, Artwork, on_replace: :nilify
+    has_one :artwork, Artwork, on_replace: :update
 
     timestamps()
   end
