@@ -24,8 +24,6 @@ defmodule UwUBlogWeb.ConnCase do
       import Phoenix.ConnTest
       import UwUBlogWeb.ConnCase
 
-      alias UwUBlogWeb.Router.Helpers, as: Routes
-
       # The default endpoint for testing
       @endpoint UwUBlogWeb.Endpoint
     end

@@ -217,4 +217,8 @@ defmodule UwUBlog.HTMLEngine do
   @impl true
   def annotate_caller(_, _) do
   end
+
+  @impl true
+  def annotate_slot(_, _, _, _) do
+  end
 end
