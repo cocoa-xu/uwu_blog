@@ -5,9 +5,8 @@ defmodule UwUBlog.MixProject do
     [
       app: :uwu_blog,
       version: "0.2.0",
-      elixir: "~> 1.12",
+      elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
@@ -25,7 +24,7 @@ defmodule UwUBlog.MixProject do
   def application do
     [
       mod: {UwUBlog.Application, []},
-      extra_applications: [:logger, :runtime_tools, :phoenix_view]
+      extra_applications: [:logger, :runtime_tools]
     ]
   end
 
@@ -44,11 +43,11 @@ defmodule UwUBlog.MixProject do
       {:hackney, "~> 1.8"},
       {:jason, "~> 1.2"},
       {:live_toast, "~> 0.6.4"},
-      {:phoenix, "~> 1.7"},
+      {:phoenix, "~> 1.8"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 4.0"},
-      {:phoenix_live_view, "~> 0.20"},
-      {:phoenix_live_dashboard, "~> 0.8"},
+      {:phoenix_live_view, "~> 1.0"},
+      {:phoenix_live_dashboard, "~> 0.8.7"},
       {:phoenix_view, "~> 2.0"},
       {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
