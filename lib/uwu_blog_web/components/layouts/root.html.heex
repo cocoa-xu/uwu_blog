@@ -9,6 +9,15 @@
     <meta name="csrf-token" content={get_csrf_token()}>
     <title><%= UwUBlog.site_title() %></title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"}/>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Merriweather:wght@700&family=Source+Serif+Pro:wght@300&family=Special+Elite&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Merriweather:wght@700&family=Source+Serif+Pro:wght@300&family=Special+Elite&display=swap" />
+    </noscript>
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}></script>
   </head>
   <body class="line-numbers">

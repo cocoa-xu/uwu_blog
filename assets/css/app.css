@@ -4,7 +4,6 @@
 
 @import "./prism.css";
 @import "./prism-line-numbers.min.css";
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Merriweather:wght@700&family=Source+Serif+Pro:wght@300&family=Special+Elite&display=swap');
 
 :root {
   --bg: #FFF;
