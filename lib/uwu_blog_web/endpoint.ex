@@ -29,7 +29,7 @@ defmodule UwUBlogWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :uwu_blog,
-    gzip: false,
+    gzip: true,
     only: ~w(assets fonts images favicon.ico robots.txt)
 
   plug Sentry.PlugContext
