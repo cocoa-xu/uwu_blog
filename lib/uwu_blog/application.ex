@@ -13,6 +13,8 @@ defmodule UwUBlog.Application do
 
     :ok = start_otel()
 
+    install_log_redaction()
+
     children = [
       UwUBlogWeb.Telemetry,
       UwUBlog.Repo,
@@ -54,5 +56,23 @@ defmodule UwUBlog.Application do
   defp skip_migrations? do
     # By default, sqlite migrations are run when using a release
     System.get_env("RELEASE_NAME") != nil
+  end
+
+  # Redact configured secrets from every log event before any handler (console,
+  # Sentry) sees them. Only installed when there is something to redact.
+  defp install_log_redaction do
+    case UwUBlog.Secrets.values() do
+      [] ->
+        :ok
+
+      secrets ->
+        _ =
+          :logger.add_primary_filter(
+            :uwu_blog_redact_secrets,
+            {&UwUBlog.LogRedactor.filter/2, secrets}
+          )
+
+        :ok
+    end
   end
 end

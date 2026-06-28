@@ -53,6 +53,12 @@ config :opentelemetry,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Scrub sensitive values from request-parameter logs. OAuth flows carry the
+# authorization `code` and tokens in params/redirects, so filter those too.
+config :phoenix,
+       :filter_parameters,
+       ~w(password secret client_secret code token access_token refresh_token id_token authorization)
+
 # Configure tailwind (the version is required)
 config :tailwind,
   version: "3.4.3",
