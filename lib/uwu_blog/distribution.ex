@@ -7,9 +7,9 @@ defmodule UwUBlog.Distribution do
 
   Naming matters for discovery: `DNSCluster` connects to peers as
   `<basename>@<ip>` for every IP that `DNS_CLUSTER_QUERY` resolves to, so each
-  node must be named `<basename>@<own-ip>`. We use the node's Tailscale address
-  (the 100.64.0.0/10 CGNAT range) as that IP. The cookie is the shared cluster
-  secret, read from `RELEASE_COOKIE` (default `cookie`).
+  node must be named `<basename>@<own-ip>`. We use the node's Tailscale IPv4
+  (from `tailscale ip -4`) as that IP. The cookie is the shared cluster secret,
+  read from `RELEASE_COOKIE` (default `cookie`).
 
   Distribution only starts when clustering is configured (`:dns_cluster_query`
   set, i.e. prod with `DNS_CLUSTER_QUERY`) or a `RELEASE_NODE` is given; dev and
@@ -47,7 +47,7 @@ defmodule UwUBlog.Distribution do
       nil ->
         Logger.warning(
           "[cluster] clustering is configured but no node name could be derived " <>
-            "(set RELEASE_NODE, or run on a Tailscale interface); staying local"
+            "(set RELEASE_NODE, or make sure `tailscale` is on PATH and connected); staying local"
         )
 
         :ok
@@ -75,22 +75,23 @@ defmodule UwUBlog.Distribution do
 
   defp cookie, do: String.to_atom(System.get_env("RELEASE_COOKIE") || "cookie")
 
-  # Tailscale assigns each device an address in the 100.64.0.0/10 CGNAT range.
+  # Asks Tailscale for this node's IPv4. Returns nil when the CLI is missing or
+  # Tailscale isn't connected; the node then stays local (or set RELEASE_NODE).
   defp tailscale_ipv4 do
-    case :inet.getifaddrs() do
-      {:ok, ifaddrs} -> find_tailscale_ipv4(ifaddrs)
+    case System.cmd("tailscale", ["ip", "-4"], stderr_to_stdout: true) do
+      {output, 0} -> parse_ip_output(output)
       _ -> nil
     end
+  rescue
+    _ -> nil
   end
 
   @doc false
-  # Picks the first 100.64.0.0/10 IPv4 address out of an `:inet.getifaddrs/0` result.
-  def find_tailscale_ipv4(ifaddrs) do
-    ifaddrs
-    |> Enum.flat_map(fn {_name, props} -> Keyword.get_values(props, :addr) end)
-    |> Enum.find_value(fn
-      {100, b, c, d} when b in 64..127 -> "100.#{b}.#{c}.#{d}"
-      _ -> nil
-    end)
+  # Takes the first non-empty line of `tailscale ip -4` output.
+  def parse_ip_output(output) do
+    case String.split(output, "\n", trim: true) do
+      [ip | _] -> String.trim(ip)
+      [] -> nil
+    end
   end
 end

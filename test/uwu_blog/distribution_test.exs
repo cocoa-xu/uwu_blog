@@ -8,30 +8,15 @@ defmodule UwUBlog.DistributionTest do
     refute Node.alive?()
   end
 
-  describe "find_tailscale_ipv4/1" do
-    test "picks the 100.64.0.0/10 address and ignores the rest" do
-      ifaddrs = [
-        {~c"lo0", [flags: [:up, :loopback], addr: {127, 0, 0, 1}, addr: {0, 0, 0, 0, 0, 0, 0, 1}]},
-        {~c"en0", [flags: [:up], addr: {192, 168, 1, 5}]},
-        {~c"utun3", [flags: [:up], addr: {100, 96, 0, 7}, addr: {0xFD7A, 0, 0, 0, 0, 0, 0, 1}]}
-      ]
-
-      assert UwUBlog.Distribution.find_tailscale_ipv4(ifaddrs) == "100.96.0.7"
+  describe "parse_ip_output/1" do
+    test "takes the first non-empty line of `tailscale ip -4`" do
+      assert UwUBlog.Distribution.parse_ip_output("100.76.154.10\n") == "100.76.154.10"
+      assert UwUBlog.Distribution.parse_ip_output("100.1.2.3\n") == "100.1.2.3"
     end
 
-    test "returns nil with no tailnet address (real loopback shape)" do
-      ifaddrs = [
-        {~c"lo0",
-         [
-           flags: [:up, :loopback, :running],
-           addr: {127, 0, 0, 1},
-           netmask: {255, 0, 0, 0},
-           addr: {0, 0, 0, 0, 0, 0, 0, 1},
-           hwaddr: [0, 0, 0, 0, 0, 0]
-         ]}
-      ]
-
-      assert UwUBlog.Distribution.find_tailscale_ipv4(ifaddrs) == nil
+    test "returns nil for empty output" do
+      assert UwUBlog.Distribution.parse_ip_output("") == nil
+      assert UwUBlog.Distribution.parse_ip_output("\n") == nil
     end
   end
 end
