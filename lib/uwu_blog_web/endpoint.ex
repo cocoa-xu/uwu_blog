@@ -13,8 +13,14 @@ defmodule UwUBlogWeb.Endpoint do
   ]
 
   socket "/live", Phoenix.LiveView.Socket,
-    websocket: [connect_info: [session: @session_options]],
-    longpoll: [connect_info: [session: @session_options]]
+    websocket: [connect_info: [:user_agent, session: @session_options]],
+    longpoll: [connect_info: [:user_agent, session: @session_options]]
+
+  # Lets concurrent LiveView/controller tests share a sandboxed DB connection.
+  # Compiled in only when the flag is set (test env); absent in dev/prod.
+  if Application.compile_env(:uwu_blog, :sql_sandbox) do
+    plug Phoenix.Ecto.SQL.Sandbox
+  end
 
   # Serve at "/" the static files from "priv/static" directory.
   #

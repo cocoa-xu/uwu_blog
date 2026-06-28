@@ -62,6 +62,7 @@ defmodule UwUBlog.MixProject do
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       {:styler, "~> 1.0.0", only: :dev, runtime: false},
       {:floki, ">= 0.30.0", only: :test},
+      {:lazy_html, ">= 0.1.0", only: :test},
 
       # Telemetry and metrics
       {:sentry, "~> 10.2.0"},

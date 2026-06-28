@@ -15,27 +15,38 @@ defmodule UwUBlog.Application do
 
     install_log_redaction()
 
-    children = [
-      UwUBlogWeb.Telemetry,
-      UwUBlog.Repo,
-      {Ecto.Migrator,
-       repos: Application.fetch_env!(:uwu_blog, :ecto_repos), skip: skip_migrations?()},
-      {DNSCluster, query: Application.get_env(:uwu_blog, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: UwUBlog.PubSub},
-      # Start the Finch HTTP client for sending emails
-      {Finch, name: FaviconCafe.Finch},
-      # Start a worker by calling: FaviconCafe.Worker.start_link(arg)
-      # {FaviconCafe.Worker, arg},
-      # Start to serve requests, typically the last entry
-      UwUBlogWeb.Endpoint,
-      {UwUBlog.PostCollection, name: UwUBlog.PostCollection},
-      {UwUBlog.NowPlaying, name: UwUBlog.NowPlaying}
-    ]
+    children =
+      [
+        UwUBlogWeb.Telemetry,
+        UwUBlog.Repo,
+        {Ecto.Migrator,
+         repos: Application.fetch_env!(:uwu_blog, :ecto_repos), skip: skip_migrations?()},
+        {DNSCluster, query: Application.get_env(:uwu_blog, :dns_cluster_query) || :ignore},
+        {Phoenix.PubSub, name: UwUBlog.PubSub},
+        # Start the Finch HTTP client for sending emails
+        {Finch, name: FaviconCafe.Finch},
+        # Start a worker by calling: FaviconCafe.Worker.start_link(arg)
+        # {FaviconCafe.Worker, arg},
+        # Start to serve requests, typically the last entry
+        UwUBlogWeb.Endpoint,
+        {UwUBlog.PostCollection, name: UwUBlog.PostCollection}
+      ] ++ now_playing_children()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: UwUBlog.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  # The now-playing worker polls the database at boot. It is disabled in test
+  # (config :uwu_blog, :start_now_playing, false) so it doesn't crash-loop
+  # against the SQL sandbox, which has no connection owner during app boot.
+  defp now_playing_children do
+    if Application.get_env(:uwu_blog, :start_now_playing, true) do
+      [{UwUBlog.NowPlaying, name: UwUBlog.NowPlaying}]
+    else
+      []
+    end
   end
 
   @spec start_otel() :: :ok

@@ -30,8 +30,23 @@ defmodule UwUBlogWeb.ConnCase do
   end
 
   setup tags do
-    UwUBlog.DataCase.setup_sandbox(tags)
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(UwUBlog.Repo, shared: not tags[:async])
+    on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
+
+    {:ok, conn: build_sandboxed_conn(pid, tags[:async])}
+  end
+
+  # For async tests (ownership mode) the request process and any connected
+  # LiveView (via UwUBlogWeb.LiveAcceptance) must be allowed onto the owner's
+  # connection — we carry the metadata in the user-agent. Non-async tests run in
+  # shared mode, where every process already sees the connection, so no metadata.
+  defp build_sandboxed_conn(_pid, false), do: Phoenix.ConnTest.build_conn()
+
+  defp build_sandboxed_conn(pid, true) do
+    metadata = Phoenix.Ecto.SQL.Sandbox.metadata_for(UwUBlog.Repo, pid)
+
+    Phoenix.ConnTest.build_conn()
+    |> Plug.Conn.put_req_header("user-agent", Phoenix.Ecto.SQL.Sandbox.encode_metadata(metadata))
   end
 
   @doc "Returns a conn carrying an authenticated admin session."
