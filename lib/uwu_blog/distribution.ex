@@ -27,6 +27,14 @@ defmodule UwUBlog.Distribution do
       not enabled?() -> :ok
       true -> start()
     end
+  rescue
+    error ->
+      Logger.error("[cluster] distribution setup raised: #{Exception.message(error)}; staying local")
+      :ok
+  catch
+    kind, reason ->
+      Logger.error("[cluster] distribution setup failed: #{inspect({kind, reason})}; staying local")
+      :ok
   end
 
   defp enabled? do
@@ -70,16 +78,19 @@ defmodule UwUBlog.Distribution do
   # Tailscale assigns each device an address in the 100.64.0.0/10 CGNAT range.
   defp tailscale_ipv4 do
     case :inet.getifaddrs() do
-      {:ok, ifaddrs} ->
-        ifaddrs
-        |> Enum.flat_map(fn {_name, props} -> Keyword.get_values(:addr, props) end)
-        |> Enum.find_value(fn
-          {100, b, c, d} when b in 64..127 -> "100.#{b}.#{c}.#{d}"
-          _ -> nil
-        end)
-
-      _ ->
-        nil
+      {:ok, ifaddrs} -> find_tailscale_ipv4(ifaddrs)
+      _ -> nil
     end
+  end
+
+  @doc false
+  # Picks the first 100.64.0.0/10 IPv4 address out of an `:inet.getifaddrs/0` result.
+  def find_tailscale_ipv4(ifaddrs) do
+    ifaddrs
+    |> Enum.flat_map(fn {_name, props} -> Keyword.get_values(props, :addr) end)
+    |> Enum.find_value(fn
+      {100, b, c, d} when b in 64..127 -> "100.#{b}.#{c}.#{d}"
+      _ -> nil
+    end)
   end
 end
