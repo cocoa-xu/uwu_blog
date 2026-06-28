@@ -36,6 +36,11 @@ config :uwu_blog, sql_sandbox: true
 # sandbox (nothing in the suite exercises it).
 config :uwu_blog, start_now_playing: false
 
+# Don't run the filesystem watcher in tests; the suite controls posts directly.
+# With `watch: false`, reads revalidate against file mtime, so edits are still
+# picked up without a restart.
+config :uwu_blog, UwUBlog.PostCollection, watch: false
+
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :uwu_blog, UwUBlogWeb.Endpoint,

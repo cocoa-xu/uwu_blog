@@ -41,6 +41,17 @@ config :uwu_blog,
   ecto_repos: [UwUBlog.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+# Compiled posts are cached in ETS. `:eager_limit` posts (most recent first) are
+# compiled at boot; the rest compile lazily on first access. `:watch` controls
+# how the cache stays fresh: `nil` enables the inotify watcher on Linux and the
+# periodic incremental reconcile elsewhere; `:reload_interval` is that fallback's
+# period.
+config :uwu_blog, UwUBlog.PostCollection,
+  posts_dir: "posts",
+  eager_limit: 25,
+  watch: nil,
+  reload_interval: :timer.minutes(5)
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

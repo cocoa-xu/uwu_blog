@@ -57,6 +57,24 @@ defmodule UwUBlog.Post do
     }
   end
 
+  @doc """
+  Cheaply resolve a post's permalink without rendering its content.
+
+  Reads only the frontmatter (or derives it from the filename), so the collection
+  can index every post by permalink without paying the full Earmark + asset-upload
+  cost of `process/1` up front.
+  """
+  @spec resolve_permalink(String.t()) :: String.t()
+  def resolve_permalink(markdown_file) do
+    with {:ok, "---\n" <> _ = markdown} <- File.read(markdown_file),
+         {frontmatter, _content} <- parse_frontmatter(markdown_file, markdown),
+         permalink when is_binary(permalink) <- frontmatter["permalink"] do
+      permalink
+    else
+      _ -> permalink_from_filename(markdown_file)
+    end
+  end
+
   @decorate trace()
   def process_content_to_ast(content, context, opts \\ []) do
     content

@@ -39,6 +39,7 @@ defmodule UwUBlog.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:earmark, "~> 1.4"},
       {:ecto_sql, "~> 3.6"},
+      {:file_system, "~> 1.0"},
       {:gettext, "~> 0.24.0"},
       {:hackney, "~> 1.8"},
       {:jason, "~> 1.2"},
