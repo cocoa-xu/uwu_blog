@@ -29,7 +29,7 @@ defmodule UwUBlogWeb.AuthControllerTest do
 
     test "is reachable once signed in", %{conn: conn} do
       conn = conn |> log_in_admin() |> get("/admin")
-      assert html_response(conn, 200) =~ "signed in"
+      assert html_response(conn, 200) =~ "sign out"
     end
   end
 

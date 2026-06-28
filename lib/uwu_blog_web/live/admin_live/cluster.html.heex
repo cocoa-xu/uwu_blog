@@ -1,0 +1,125 @@
+<header class="admin-header">
+  <h1 class="admin-title">cluster</h1>
+  <p class="admin-subtitle">{cluster_summary(@overview)}</p>
+</header>
+
+<div :if={not @overview.distributed?} class="admin-notice">
+  <strong>distribution isn't enabled.</strong>
+  Start the node with a name and shared cookie (<code>--name</code> + <code>--cookie</code>), then
+  set <code>DNS_CLUSTER_QUERY</code> so peers on your tailnet can discover each other.
+</div>
+
+<section class="stat-grid">
+  <div class="stat">
+    <span class="stat-label">nodes</span>
+    <span class="stat-value">{@overview.node_count}</span>
+    <span class="stat-sub">{length(@overview.peers)} {pluralize(length(@overview.peers), "peer", "peers")}</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">this node</span>
+    <span class="stat-value stat-value-sm">{node_label(@overview.this_node)}</span>
+    <span class="stat-sub">cookie {(@overview.cookie_set? && "set") || "not set"}</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">schedulers</span>
+    <span class="stat-value">{(@local && @local.schedulers_online) || "—"}</span>
+    <span class="stat-sub">of {(@local && @local.schedulers) || "—"} online</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">memory</span>
+    <span class="stat-value">{format_bytes(@local && @local.memory_total)}</span>
+    <span class="stat-sub">in use on this node</span>
+  </div>
+</section>
+
+<section class="admin-card">
+  <h2 class="admin-card-heading">nodes</h2>
+  <ul class="nodes">
+    <li :for={{node, result} <- @node_stats} class="node-row">
+      <span class="node-status" aria-hidden="true"></span>
+      <div class="node-id">
+        <span class="node-name">{node_label(node)}</span>
+        <span class={["node-tag", node == @overview.this_node && "node-tag-self"]}>
+          {(node == @overview.this_node && "this node") || "peer"}
+        </span>
+      </div>
+      <%= case result do %>
+        <% {:ok, stats} -> %>
+          <div class="node-metrics">
+            <span><span class="node-metric-label">procs</span> {format_number(stats.process_count)}</span>
+            <span><span class="node-metric-label">mem</span> {format_bytes(stats.memory_total)}</span>
+            <span><span class="node-metric-label">up</span> {format_uptime(stats.uptime_ms)}</span>
+          </div>
+        <% {:error, reason} -> %>
+          <div class="node-metrics node-unreachable">unreachable · {inspect(reason)}</div>
+      <% end %>
+    </li>
+  </ul>
+</section>
+
+<section :if={@local} class="admin-card">
+  <h2 class="admin-card-heading">this node · runtime</h2>
+
+  <dl class="kv">
+    <div class="kv-row">
+      <dt class="kv-key">elixir / otp</dt>
+      <dd class="kv-value">{@local.elixir_version} · OTP {@local.otp_release}</dd>
+    </div>
+    <div class="kv-row">
+      <dt class="kv-key">architecture</dt>
+      <dd class="kv-value">{@local.architecture}</dd>
+    </div>
+    <div class="kv-row">
+      <dt class="kv-key">uptime</dt>
+      <dd class="kv-value">{format_uptime(@local.uptime_ms)}</dd>
+    </div>
+    <div class="kv-row">
+      <dt class="kv-key">run queue</dt>
+      <dd class="kv-value">{@local.run_queue}</dd>
+    </div>
+    <div class="kv-row">
+      <dt class="kv-key">ports</dt>
+      <dd class="kv-value">{format_number(@local.port_count)} / {format_number(@local.port_limit)}</dd>
+    </div>
+  </dl>
+
+  <div class="gauge">
+    <div class="gauge-head">
+      <span>processes</span>
+      <span>{format_number(@local.process_count)} / {format_number(@local.process_limit)}</span>
+    </div>
+    <div class="meter">
+      <div class="meter-fill" style={"width: #{percent(@local.process_count, @local.process_limit)}%"}></div>
+    </div>
+  </div>
+
+  <div class="gauge">
+    <div class="gauge-head">
+      <span>atoms</span>
+      <span>{format_number(@local.atom_count)} / {format_number(@local.atom_limit)}</span>
+    </div>
+    <div class="meter">
+      <div class="meter-fill" style={"width: #{percent(@local.atom_count, @local.atom_limit)}%"}></div>
+    </div>
+  </div>
+
+  <h3 class="admin-subheading">memory</h3>
+  <div class="mem-grid">
+    <div class="mem">
+      <span class="mem-label">total</span>
+      <span class="mem-value">{format_bytes(@local.memory_total)}</span>
+    </div>
+    <div class="mem">
+      <span class="mem-label">processes</span>
+      <span class="mem-value">{format_bytes(@local.memory_processes)}</span>
+    </div>
+    <div class="mem">
+      <span class="mem-label">binary</span>
+      <span class="mem-value">{format_bytes(@local.memory_binary)}</span>
+    </div>
+    <div class="mem">
+      <span class="mem-label">ets</span>
+      <span class="mem-value">{format_bytes(@local.memory_ets)}</span>
+    </div>
+  </div>
+</section>

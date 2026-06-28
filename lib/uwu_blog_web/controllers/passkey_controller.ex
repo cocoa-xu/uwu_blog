@@ -3,7 +3,6 @@ defmodule UwUBlogWeb.PasskeyController do
 
   import UwUBlogWeb.Auth
 
-  alias UwUBlog.Passkeys
   alias UwUBlogWeb.Auth.Passkey
 
   # --- Registration (admin only) ---
@@ -27,14 +26,6 @@ defmodule UwUBlogWeb.PasskeyController do
       _ ->
         conn |> put_status(:unprocessable_entity) |> json(%{ok: false})
     end
-  end
-
-  def delete(conn, %{"id" => id}) do
-    id |> Passkeys.get_credential!() |> Passkeys.delete_credential()
-
-    conn
-    |> put_flash(:info, "Passkey removed.")
-    |> redirect(to: ~p"/admin")
   end
 
   # --- Authentication (passwordless) ---

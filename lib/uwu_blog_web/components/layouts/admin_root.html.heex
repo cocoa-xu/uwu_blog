@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <title>{UwUBlog.site_title()} · admin</title>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Merriweather:wght@700&family=Source+Serif+Pro:wght@300;600&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Merriweather:wght@700&family=Source+Serif+Pro:wght@300;600&display=swap"
+      />
+    </noscript>
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}></script>
+  </head>
+  <body class="admin-body">
+    {@inner_content}
+  </body>
+</html>

@@ -1,0 +1,35 @@
+<header class="admin-header">
+  <h1 class="admin-title">passkeys</h1>
+  <p class="admin-subtitle">security keys and biometrics that can sign you in</p>
+</header>
+
+<section class="admin-card">
+  <h2 class="admin-card-heading">registered</h2>
+
+  <p :if={@credentials == []} class="admin-empty">No passkeys registered yet.</p>
+
+  <ul :if={@credentials != []} class="passkey-list">
+    <li :for={credential <- @credentials} class="passkey-item">
+      <div class="passkey-meta">
+        <span class="passkey-label">{credential.label}</span>
+        <span class="passkey-date">added {Calendar.strftime(credential.inserted_at, "%Y-%m-%d")}</span>
+      </div>
+      <button
+        type="button"
+        class="passkey-remove"
+        phx-click="delete"
+        phx-value-id={credential.id}
+        data-confirm="Remove this passkey?"
+      >
+        remove
+      </button>
+    </li>
+  </ul>
+
+  <div class="passkey-add" id="passkey-register" phx-hook="PasskeyRegister">
+    <input type="text" data-passkey-label placeholder="name (e.g. YubiKey)" class="auth-input" />
+    <button type="button" data-passkey-register class="auth-button" hidden>
+      register a passkey
+    </button>
+  </div>
+</section>

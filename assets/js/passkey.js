@@ -88,42 +88,50 @@ function cancelled(error) {
   return error && error.name === "NotAllowedError"
 }
 
+// Wires the passkey login button on the (non-LiveView) login page. The admin
+// registration button is wired by the `PasskeyRegister` hook instead, so it
+// survives LiveView navigation.
 export function initPasskeys() {
-  const registerButton = document.querySelector("[data-passkey-register]")
   const loginButton = document.querySelector("[data-passkey-login]")
-  const buttons = [registerButton, loginButton].filter(Boolean)
 
-  // Buttons render hidden; reveal them only when WebAuthn is actually available.
-  if (buttons.length === 0 || !window.PublicKeyCredential) return
-  for (const button of buttons) button.hidden = false
+  // The button renders hidden; reveal it only when WebAuthn is actually available.
+  if (!loginButton || !window.PublicKeyCredential) return
+  loginButton.hidden = false
 
-  if (registerButton) {
-    registerButton.addEventListener("click", async () => {
-      const labelInput = document.querySelector("[data-passkey-label]")
+  loginButton.addEventListener("click", async () => {
+    loginButton.disabled = true
+    try {
+      await authenticatePasskey()
+    } catch (error) {
+      if (!cancelled(error)) alert("Could not sign in with a passkey.")
+      loginButton.disabled = false
+    }
+  })
+}
+
+// LiveView hook for the admin "register a passkey" button. On success it tells
+// the LiveView, which refreshes the credential list in place.
+export const PasskeyRegister = {
+  mounted() {
+    const button = this.el.querySelector("[data-passkey-register]")
+    if (!button || !window.PublicKeyCredential) return
+    button.hidden = false
+
+    button.addEventListener("click", async () => {
+      const labelInput = this.el.querySelector("[data-passkey-label]")
       const label = labelInput ? labelInput.value.trim() : ""
-      registerButton.disabled = true
+      button.disabled = true
       try {
         if (await registerPasskey(label)) {
-          window.location.reload()
+          if (labelInput) labelInput.value = ""
+          this.pushEvent("passkey_registered", {})
         } else {
           alert("Could not register the passkey.")
         }
       } catch (error) {
         if (!cancelled(error)) alert("Could not register the passkey.")
       } finally {
-        registerButton.disabled = false
-      }
-    })
-  }
-
-  if (loginButton) {
-    loginButton.addEventListener("click", async () => {
-      loginButton.disabled = true
-      try {
-        await authenticatePasskey()
-      } catch (error) {
-        if (!cancelled(error)) alert("Could not sign in with a passkey.")
-        loginButton.disabled = false
+        button.disabled = false
       }
     })
   }

@@ -1,0 +1,54 @@
+<div class="admin">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">
+      <span class="admin-brand-mark">uwu</span>
+      <span class="admin-brand-sub">admin</span>
+    </div>
+
+    <nav class="admin-nav">
+      <.link navigate={~p"/admin"} class={["admin-nav-item", assigns[:page] == :cluster && "is-active"]}>
+        <svg class="admin-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="6" rx="1.5" />
+          <rect x="3" y="14" width="18" height="6" rx="1.5" />
+          <circle cx="7" cy="7" r=".6" fill="currentColor" />
+          <circle cx="7" cy="17" r=".6" fill="currentColor" />
+        </svg>
+        <span>cluster</span>
+      </.link>
+
+      <.link navigate={~p"/admin/passkeys"} class={["admin-nav-item", assigns[:page] == :passkeys && "is-active"]}>
+        <svg class="admin-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="8" cy="8" r="4" />
+          <path d="M10.8 10.8 20 20" />
+          <path d="M16 16l2.5-2.5" />
+        </svg>
+        <span>passkeys</span>
+      </.link>
+    </nav>
+
+    <div class="admin-sidebar-footer">
+      <a href={~p"/"} class="admin-nav-item admin-nav-muted">
+        <svg class="admin-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+        <span>back to blog</span>
+      </a>
+
+      <.form for={%{}} action={~p"/__auth/logout"} method="delete" class="admin-signout-form">
+        <button type="submit" class="admin-nav-item admin-signout">
+          <svg class="admin-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <path d="M16 17l5-5-5-5" />
+            <path d="M21 12H9" />
+          </svg>
+          <span>sign out</span>
+        </button>
+      </.form>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <.flash_group flash={@flash} />
+    {@inner_content}
+  </main>
+</div>

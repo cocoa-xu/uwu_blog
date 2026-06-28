@@ -50,20 +50,4 @@ defmodule UwUBlogWeb.PasskeyControllerTest do
       assert get_session(conn, :passkey_authentication_challenge)
     end
   end
-
-  describe "removing a credential" do
-    test "deletes it when signed in", %{conn: conn} do
-      credential = credential()
-      conn = conn |> log_in_admin() |> delete("/admin/passkeys/#{credential.id}")
-      assert redirected_to(conn) == "/admin"
-      refute Passkeys.any?()
-    end
-
-    test "requires authentication", %{conn: conn} do
-      credential = credential()
-      conn = delete(conn, "/admin/passkeys/#{credential.id}")
-      assert redirected_to(conn) == "/login"
-      assert Passkeys.any?()
-    end
-  end
 end

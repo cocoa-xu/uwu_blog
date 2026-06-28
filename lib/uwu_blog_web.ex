@@ -61,6 +61,24 @@ defmodule UwUBlogWeb do
       use Phoenix.LiveView,
         layout: {UwUBlogWeb.Layouts, :app}
 
+      # In test, share the caller's DB sandbox connection (see LiveAcceptance).
+      if Application.compile_env(:uwu_blog, :sql_sandbox) do
+        on_mount UwUBlogWeb.LiveAcceptance
+      end
+
+      unquote(html_helpers())
+    end
+  end
+
+  def admin_live_view do
+    quote do
+      use Phoenix.LiveView,
+        layout: {UwUBlogWeb.Layouts, :admin}
+
+      if Application.compile_env(:uwu_blog, :sql_sandbox) do
+        on_mount UwUBlogWeb.LiveAcceptance
+      end
+
       unquote(html_helpers())
     end
   end

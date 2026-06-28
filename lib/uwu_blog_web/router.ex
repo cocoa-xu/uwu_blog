@@ -57,11 +57,15 @@ defmodule UwUBlogWeb.Router do
   scope "/admin", UwUBlogWeb do
     pipe_through [:browser, :admin]
 
-    get "/", AdminController, :index
+    live_session :admin,
+      on_mount: {UwUBlogWeb.Auth, :ensure_admin},
+      root_layout: {UwUBlogWeb.Layouts, :admin_root} do
+      live "/", AdminLive.Cluster, :index
+      live "/passkeys", AdminLive.Passkeys, :index
+    end
 
     post "/passkeys/challenge", PasskeyController, :registration_challenge
     post "/passkeys", PasskeyController, :register
-    delete "/passkeys/:id", PasskeyController, :delete
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

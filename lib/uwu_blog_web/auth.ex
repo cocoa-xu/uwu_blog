@@ -66,6 +66,19 @@ defmodule UwUBlogWeb.Auth do
   end
 
   @doc """
+  `on_mount` hook that gates admin LiveViews. Mirrors `require_admin/2` for the
+  socket: it lets authenticated mounts continue and redirects everyone else to
+  the login page. Wire it into the admin `live_session`.
+  """
+  def on_mount(:ensure_admin, _params, session, socket) do
+    if session[Atom.to_string(@session_key)] == true do
+      {:cont, socket}
+    else
+      {:halt, Phoenix.LiveView.redirect(socket, to: login_path())}
+    end
+  end
+
+  @doc """
   Plug that halts unauthenticated requests, redirecting them to the login page.
   Use it to gate admin-only routes.
   """
