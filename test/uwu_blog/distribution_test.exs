@@ -8,6 +8,12 @@ defmodule UwUBlog.DistributionTest do
     refute Node.alive?()
   end
 
+  test "epmd_path/0 resolves to the ERTS epmd binary" do
+    path = UwUBlog.Distribution.epmd_path()
+    assert path =~ "epmd"
+    assert File.exists?(path)
+  end
+
   describe "parse_ip_output/1" do
     test "takes the first non-empty line of `tailscale ip -4`" do
       assert UwUBlog.Distribution.parse_ip_output("100.76.154.10\n") == "100.76.154.10"

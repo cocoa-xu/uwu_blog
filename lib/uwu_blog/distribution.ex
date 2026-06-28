@@ -53,6 +53,8 @@ defmodule UwUBlog.Distribution do
         :ok
 
       name ->
+        ensure_epmd()
+
         case :net_kernel.start(name, %{name_domain: :longnames}) do
           {:ok, _pid} ->
             Node.set_cookie(cookie())
@@ -64,6 +66,25 @@ defmodule UwUBlog.Distribution do
             :ok
         end
     end
+  end
+
+  # epmd (the Erlang port mapper) isn't auto-started under `mix phx.server`, and
+  # the systemd PATH may not let the VM spawn it. Start the copy that ships with
+  # ERTS by absolute path so it doesn't depend on PATH; no-op if one is already up.
+  defp ensure_epmd do
+    System.cmd(epmd_path(), ["-daemon"])
+    :ok
+  rescue
+    _ -> :ok
+  catch
+    _, _ -> :ok
+  end
+
+  @doc false
+  def epmd_path do
+    [:code.root_dir(), ~c"erts-" ++ :erlang.system_info(:version), ~c"bin", ~c"epmd"]
+    |> :filename.join()
+    |> to_string()
   end
 
   defp node_name do
