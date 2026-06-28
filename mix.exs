@@ -53,6 +53,7 @@ defmodule UwUBlog.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:req, "~> 0.5"},
       {:swoosh, "~> 1.3"},
+      {:wax_, "~> 0.7.0"},
       {:yaml_elixir, "~> 2.9"},
 
       # dev/test

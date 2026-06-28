@@ -4,6 +4,7 @@ defmodule UwUBlogWeb.AuthController do
   import UwUBlogWeb.Auth
 
   alias UwUBlogWeb.Auth.Google
+  alias UwUBlogWeb.Auth.Passkey
 
   plug :redirect_if_admin when action in [:new, :create, :google_request]
 
@@ -110,6 +111,7 @@ defmodule UwUBlogWeb.AuthController do
     conn
     |> assign(:login_path, login_path())
     |> assign(:google_enabled, Google.configured?())
+    |> assign(:passkey_enabled, Passkey.any?())
     |> assign(:form, Phoenix.Component.to_form(params, as: :auth))
     |> render(:new)
   end

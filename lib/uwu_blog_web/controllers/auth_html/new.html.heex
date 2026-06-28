@@ -31,9 +31,11 @@
       <button type="submit" class="auth-button">enter</button>
     </.form>
 
-    <%= if @google_enabled do %>
+    <%= if @google_enabled or @passkey_enabled do %>
       <div class="auth-divider"><span>or</span></div>
+    <% end %>
 
+    <%= if @google_enabled do %>
       <a href={~p"/auth/google"} class="auth-button auth-button-google">
         <svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true">
           <path
@@ -55,6 +57,26 @@
         </svg>
         <span>Sign in with Google</span>
       </a>
+    <% end %>
+
+    <%= if @passkey_enabled do %>
+      <button type="button" data-passkey-login class="auth-button auth-button-passkey" hidden>
+        <svg
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" />
+          <circle cx="16.5" cy="7.5" r=".5" fill="currentColor" />
+        </svg>
+        <span>Sign in with a passkey</span>
+      </button>
     <% end %>
   </div>
 </div>

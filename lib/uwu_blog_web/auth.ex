@@ -47,9 +47,19 @@ defmodule UwUBlogWeb.Auth do
   """
   def log_in_admin(conn, _params \\ %{}) do
     conn
+    |> put_admin_session()
+    |> redirect(to: signed_in_path())
+  end
+
+  @doc """
+  Marks the current session as the authenticated admin without redirecting.
+  Useful for API-style sign-ins (e.g. the passkey ceremony) that respond with
+  JSON and let the client navigate.
+  """
+  def put_admin_session(conn) do
+    conn
     |> renew_session()
     |> put_session(@session_key, true)
-    |> redirect(to: signed_in_path())
   end
 
   @doc "Clears the admin session and redirects to the login page."

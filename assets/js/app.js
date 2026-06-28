@@ -7,6 +7,7 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 // import {createLiveToastHook} from "live_toast"
 import topbar from "../vendor/topbar"
+import {initPasskeys} from "./passkey"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
@@ -30,3 +31,6 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
+
+// Wire up passkey buttons on the login and admin pages.
+initPasskeys()

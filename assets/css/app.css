@@ -353,6 +353,67 @@ cite {
   background: #faf7f7;
 }
 
+.auth-button-passkey {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: var(--bg);
+  border: 1px solid #e7e3e3;
+  color: var(--post-title);
+}
+
+.auth-button-passkey:hover {
+  background: #faf7f7;
+}
+
+.passkeys {
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.passkeys-heading {
+  font-family: 'Merriweather', serif;
+  font-size: var(--info-text);
+  color: var(--post-excerpt);
+  margin: 0 0 0.5rem;
+}
+
+.passkeys-empty {
+  color: var(--post-excerpt);
+  font-size: var(--info-text);
+  margin: 0 0 0.75rem;
+}
+
+.passkeys-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+}
+
+.passkeys-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #ece8e8;
+}
+
+.passkeys-remove {
+  background: none;
+  border: none;
+  color: #c2548a;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--info-text);
+}
+
+.passkeys-add {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 /* Kira */
 .kira {
   margin-top: 4rem;

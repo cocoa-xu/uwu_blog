@@ -49,12 +49,19 @@ defmodule UwUBlogWeb.Router do
 
     get "/auth/google", AuthController, :google_request
     get "/auth/google/callback", AuthController, :google_callback
+
+    post "/auth/passkey/challenge", PasskeyController, :authentication_challenge
+    post "/auth/passkey", PasskeyController, :authenticate
   end
 
   scope "/admin", UwUBlogWeb do
     pipe_through [:browser, :admin]
 
     get "/", AdminController, :index
+
+    post "/passkeys/challenge", PasskeyController, :registration_challenge
+    post "/passkeys", PasskeyController, :register
+    delete "/passkeys/:id", PasskeyController, :delete
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
