@@ -15,6 +15,9 @@ defmodule UwUBlog.Application do
 
     install_log_redaction()
 
+    # Go distributed before DNSCluster starts, so it derives the right basename.
+    UwUBlog.Distribution.ensure_started()
+
     children =
       [
         UwUBlogWeb.Telemetry,
