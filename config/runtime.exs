@@ -16,6 +16,41 @@ import Config
 #
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
+# Load local .env files for development convenience. Real environment variables
+# always take precedence, and missing files are ignored, so production and CI
+# are unaffected. Kept first so the rest of this file can read the values.
+for path <- [".env", ".env.#{config_env()}"], File.exists?(path) do
+  for raw_line <- File.stream!(path) do
+    line = raw_line |> String.trim() |> String.replace_prefix("export ", "")
+
+    case String.split(line, "=", parts: 2) do
+      [key, value] ->
+        key = String.trim(key)
+        value = value |> String.trim() |> String.trim("\"") |> String.trim("'")
+
+        if key != "" and not String.starts_with?(key, "#") and System.get_env(key) in [nil, ""] do
+          System.put_env(key, value)
+        end
+
+      _ ->
+        :ok
+    end
+  end
+end
+
+# Google OAuth (Phase 2). The client id is public; the client secret is wrapped
+# in `UwUBlog.Secret` so it can never leak through inspect, logs, or Sentry, and
+# is read from the environment (set GOOGLE_CLIENT_SECRET, e.g. in a local .env).
+# ADMIN_GOOGLE_EMAILS is a comma-separated allow-list of Google accounts allowed
+# to sign in as admin. Both fail closed (no sign-in) when unset. The test env
+# configures this itself (with a stubbed HTTP client) in config/test.exs.
+if config_env() != :test do
+  config :uwu_blog, UwUBlogWeb.Auth.Google,
+    client_id: "505816294388-ri219oa0j1okbm7lg8o8rm4u9sohhvfs.apps.googleusercontent.com",
+    client_secret: UwUBlog.Secret.new(System.get_env("GOOGLE_CLIENT_SECRET")),
+    allowed_emails: System.get_env("ADMIN_GOOGLE_EMAILS") || ""
+end
+
 if System.get_env("PHX_SERVER") do
   config :uwu_blog, UwUBlogWeb.Endpoint, server: true
 end
@@ -96,6 +131,14 @@ if config_env() == :prod do
         raise("""
         environment variable NOW_PLAYING_APIKEY is missing.
         """)
+
+  # Single-admin login (Phase 1). LOGIN_PATH overrides the public login path
+  # (defaults to "/login"). When ADMIN_USERNAME / ADMIN_PASSWORD are unset the
+  # login fails closed — the site still boots, but no sign-in will succeed.
+  config :uwu_blog, UwUBlogWeb.Auth,
+    login_path: System.get_env("LOGIN_PATH") || "/login",
+    username: System.get_env("ADMIN_USERNAME"),
+    password: System.get_env("ADMIN_PASSWORD")
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you

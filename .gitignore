@@ -37,3 +37,8 @@ npm-debug.log
 
 # macOS
 .DS_Store
+
+# Local environment variables (secrets) — never commit these.
+/.env
+/.env.*
+!/.env.example

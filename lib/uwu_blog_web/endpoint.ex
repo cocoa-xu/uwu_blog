@@ -52,5 +52,6 @@ defmodule UwUBlogWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+  plug UwUBlogWeb.Plugs.LoginPath
   plug UwUBlogWeb.Router
 end

@@ -9,6 +9,20 @@ import Config
 # In test we don't send emails.
 config :uwu_blog, UwUBlog.Mailer, adapter: Swoosh.Adapters.Test
 
+# Deterministic single-admin credentials for the auth tests.
+config :uwu_blog, UwUBlogWeb.Auth,
+  login_path: "/login",
+  username: "testadmin",
+  password: "testpass"
+
+# Google OAuth test config. Req calls are routed to a per-test stub
+# (`Req.Test`), so no real network requests are made.
+config :uwu_blog, UwUBlogWeb.Auth.Google,
+  client_id: "test-client-id",
+  client_secret: "test-secret",
+  allowed_emails: "admin@example.com",
+  req_options: [plug: {Req.Test, UwUBlogWeb.Auth.Google}]
+
 config :uwu_blog, UwUBlog.Repo,
   username: "postgres",
   password: "postgres",

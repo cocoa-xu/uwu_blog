@@ -1,6 +1,8 @@
 defmodule UwUBlogWeb.Router do
   use UwUBlogWeb, :router
 
+  import UwUBlogWeb.Auth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -8,10 +10,15 @@ defmodule UwUBlogWeb.Router do
     plug :put_root_layout, {UwUBlogWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_admin
   end
 
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  pipeline :admin do
+    plug :require_admin
   end
 
   scope "/now-playing", UwUBlogWeb do
@@ -29,6 +36,25 @@ defmodule UwUBlogWeb.Router do
     live_session :now_playing do
       live "/now_playing", NowPlayingLive.Index
     end
+  end
+
+  # Authentication. The controller is mounted on a fixed internal path;
+  # `UwUBlogWeb.Plugs.LoginPath` maps the configured public login path onto it.
+  scope "/", UwUBlogWeb do
+    pipe_through :browser
+
+    get "/__auth/login", AuthController, :new
+    post "/__auth/login", AuthController, :create
+    delete "/__auth/logout", AuthController, :delete
+
+    get "/auth/google", AuthController, :google_request
+    get "/auth/google/callback", AuthController, :google_callback
+  end
+
+  scope "/admin", UwUBlogWeb do
+    pipe_through [:browser, :admin]
+
+    get "/", AdminController, :index
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
