@@ -2,14 +2,14 @@ defmodule UwUBlogWeb.Auth do
   @moduledoc """
   Single-admin authentication for the blog.
 
-  Phase 1 verifies one owner account against credentials supplied through
-  application config under `config :uwu_blog, #{inspect(__MODULE__)}`: hardcoded
-  in `config/dev.exs` for development and read from the environment in
-  `config/runtime.exs` for production. There is no database and no registration.
+  Sign-in is passwordless: Google OAuth (`UwUBlogWeb.Auth.Google`) and WebAuthn
+  passkeys (`UwUBlogWeb.Auth.Passkey`). There is no username/password and no user
+  database. The only setting here is `:login_path` — the (optionally secret) path
+  the login page is served from.
 
-  Every successful authentication funnels through `log_in_admin/2`. That is the
-  single seam future strategies (OAuth, WebAuthn/passkeys) hook into: each one
-  only has to resolve an allowed identity and then call `log_in_admin/2`.
+  Every successful authentication funnels through `log_in_admin/2` (or
+  `put_admin_session/1` for the JSON passkey flow); each method only has to
+  resolve an allowed identity and then call it.
   """
 
   use UwUBlogWeb, :verified_routes
@@ -26,19 +26,6 @@ defmodule UwUBlogWeb.Auth do
   def login_path do
     config(:login_path) || "/login"
   end
-
-  @doc """
-  Verifies a username/password pair against the configured credentials with a
-  constant-time comparison. Fails closed when either credential is unconfigured,
-  so an unconfigured production deploy simply rejects every login.
-  """
-  def valid_credentials?(username, password)
-      when is_binary(username) and is_binary(password) do
-    secure_equal?(config(:username), username) and
-      secure_equal?(config(:password), password)
-  end
-
-  def valid_credentials?(_username, _password), do: false
 
   @doc """
   Marks the current session as the authenticated admin and redirects to the
@@ -117,11 +104,4 @@ defmodule UwUBlogWeb.Auth do
   end
 
   defp config(key), do: Application.get_env(:uwu_blog, __MODULE__, [])[key]
-
-  defp secure_equal?(expected, given)
-       when is_binary(expected) and expected != "" and is_binary(given) do
-    Plug.Crypto.secure_compare(expected, given)
-  end
-
-  defp secure_equal?(_expected, _given), do: false
 end

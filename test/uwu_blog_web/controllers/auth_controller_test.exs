@@ -1,18 +1,12 @@
 defmodule UwUBlogWeb.AuthControllerTest do
   use UwUBlogWeb.ConnCase, async: true
 
-  @username "testadmin"
-  @password "testpass"
-
-  defp valid_params, do: %{"auth" => %{"username" => @username, "password" => @password}}
-
   describe "the login page" do
-    test "renders the sign-in form at the configured login path", %{conn: conn} do
-      conn = get(conn, "/login")
-      response = html_response(conn, 200)
+    test "renders the passwordless sign-in options", %{conn: conn} do
+      response = html_response(get(conn, "/login"), 200)
       assert response =~ "sign in"
-      assert response =~ ~s(name="auth[username]")
-      assert response =~ ~s(name="auth[password]")
+      assert response =~ "Sign in with Google"
+      refute response =~ ~s(name="auth[password]")
     end
 
     test "rejects the internal canonical path, keeping the configured path the only entry",
@@ -20,29 +14,9 @@ defmodule UwUBlogWeb.AuthControllerTest do
       conn = get(conn, "/__auth/login")
       assert response(conn, 404)
     end
-  end
-
-  describe "signing in" do
-    test "valid credentials authenticate the admin and redirect to /admin", %{conn: conn} do
-      conn = post(conn, "/login", valid_params())
-      assert redirected_to(conn) == "/admin"
-      assert get_session(conn, :admin_authenticated) == true
-    end
-
-    test "invalid credentials are rejected with 401 and no session", %{conn: conn} do
-      conn = post(conn, "/login", %{"auth" => %{"username" => @username, "password" => "nope"}})
-      assert html_response(conn, 401) =~ "Invalid username or password"
-      refute get_session(conn, :admin_authenticated)
-    end
-
-    test "missing params are rejected", %{conn: conn} do
-      conn = post(conn, "/login", %{})
-      assert html_response(conn, 401) =~ "Invalid username or password"
-      refute get_session(conn, :admin_authenticated)
-    end
 
     test "an authenticated admin visiting the login page is redirected to /admin", %{conn: conn} do
-      conn = conn |> post("/login", valid_params()) |> get("/login")
+      conn = conn |> log_in_admin() |> get("/login")
       assert redirected_to(conn) == "/admin"
     end
   end
@@ -54,27 +28,20 @@ defmodule UwUBlogWeb.AuthControllerTest do
     end
 
     test "is reachable once signed in", %{conn: conn} do
-      conn = conn |> post("/login", valid_params()) |> get("/admin")
+      conn = conn |> log_in_admin() |> get("/admin")
       assert html_response(conn, 200) =~ "signed in"
     end
   end
 
   describe "signing out" do
     test "clears the session and redirects to the login page", %{conn: conn} do
-      conn = post(conn, "/login", valid_params())
-      assert get_session(conn, :admin_authenticated) == true
-
-      conn = delete(conn, "/__auth/logout")
+      conn = conn |> log_in_admin() |> delete("/__auth/logout")
       assert redirected_to(conn) == "/login"
       refute get_session(conn, :admin_authenticated)
     end
   end
 
   describe "signing in with Google" do
-    test "the login page shows the Google button", %{conn: conn} do
-      assert html_response(get(conn, "/login"), 200) =~ "Sign in with Google"
-    end
-
     test "redirects to Google's consent screen with a CSRF state", %{conn: conn} do
       conn = get(conn, "/auth/google")
       location = redirected_to(conn)

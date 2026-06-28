@@ -32,12 +32,9 @@ config :uwu_blog, UwUBlogWeb.Endpoint,
 
 config :uwu_blog, UwUBlog.NowPlaying, apikey: "NOWPLAYINGAPIKEY"
 
-# Single-admin login (Phase 1). Hardcoded for development; in production these
-# come from the environment via config/runtime.exs.
-config :uwu_blog, UwUBlogWeb.Auth,
-  login_path: "/login",
-  username: "cocoa",
-  password: "changeme"
+# Login page path (passwordless sign-in: Google + passkeys). In production this
+# comes from the environment via config/runtime.exs.
+config :uwu_blog, UwUBlogWeb.Auth, login_path: "/login"
 
 # ## SSL Support
 #

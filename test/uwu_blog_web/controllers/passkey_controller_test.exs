@@ -3,10 +3,6 @@ defmodule UwUBlogWeb.PasskeyControllerTest do
 
   alias UwUBlog.Passkeys
 
-  defp log_in(conn) do
-    post(conn, "/login", %{"auth" => %{"username" => "testadmin", "password" => "testpass"}})
-  end
-
   defp credential(id \\ "credential-1") do
     {:ok, credential} =
       Passkeys.create_credential(%{
@@ -25,7 +21,7 @@ defmodule UwUBlogWeb.PasskeyControllerTest do
     end
 
     test "returns creation options and stores the challenge when signed in", %{conn: conn} do
-      conn = conn |> log_in() |> post("/admin/passkeys/challenge")
+      conn = conn |> log_in_admin() |> post("/admin/passkeys/challenge")
 
       options = json_response(conn, 200)
       assert is_binary(options["challenge"])
@@ -58,7 +54,7 @@ defmodule UwUBlogWeb.PasskeyControllerTest do
   describe "removing a credential" do
     test "deletes it when signed in", %{conn: conn} do
       credential = credential()
-      conn = conn |> log_in() |> delete("/admin/passkeys/#{credential.id}")
+      conn = conn |> log_in_admin() |> delete("/admin/passkeys/#{credential.id}")
       assert redirected_to(conn) == "/admin"
       refute Passkeys.any?()
     end

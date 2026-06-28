@@ -132,13 +132,9 @@ if config_env() == :prod do
         environment variable NOW_PLAYING_APIKEY is missing.
         """)
 
-  # Single-admin login (Phase 1). LOGIN_PATH overrides the public login path
-  # (defaults to "/login"). When ADMIN_USERNAME / ADMIN_PASSWORD are unset the
-  # login fails closed — the site still boots, but no sign-in will succeed.
-  config :uwu_blog, UwUBlogWeb.Auth,
-    login_path: System.get_env("LOGIN_PATH") || "/login",
-    username: System.get_env("ADMIN_USERNAME"),
-    password: System.get_env("ADMIN_PASSWORD")
+  # Login page path. LOGIN_PATH overrides it (default "/login"). Sign-in itself
+  # is passwordless (Google + passkeys).
+  config :uwu_blog, UwUBlogWeb.Auth, login_path: System.get_env("LOGIN_PATH") || "/login"
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
