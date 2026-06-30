@@ -33,7 +33,7 @@ defmodule UwUBlog.Application do
         # Start to serve requests, typically the last entry
         UwUBlogWeb.Endpoint,
         {UwUBlog.PostCollection, name: UwUBlog.PostCollection}
-      ] ++ now_playing_children()
+      ] ++ now_playing_children() ++ node_network_children()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -47,6 +47,17 @@ defmodule UwUBlog.Application do
   defp now_playing_children do
     if Application.get_env(:uwu_blog, :start_now_playing, true) do
       [{UwUBlog.NowPlaying, name: UwUBlog.NowPlaying}]
+    else
+      []
+    end
+  end
+
+  # Each node looks up its own public egress IP/ASN for the cluster dashboard.
+  # The Task.Supervisor runs the lookups off the GenServer; disabled in test so
+  # the suite never reaches the network (config :uwu_blog, :start_node_network).
+  defp node_network_children do
+    if Application.get_env(:uwu_blog, :start_node_network, true) do
+      [{Task.Supervisor, name: UwUBlog.TaskSupervisor}, UwUBlog.NodeNetwork]
     else
       []
     end

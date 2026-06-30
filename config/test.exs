@@ -36,6 +36,11 @@ config :uwu_blog, sql_sandbox: true
 # sandbox (nothing in the suite exercises it).
 config :uwu_blog, start_now_playing: false
 
+# Each node looks up its public egress IP/ASN at boot; keep that off the network
+# in tests. Any lookup that does run is routed to a per-test Req stub.
+config :uwu_blog, start_node_network: false
+config :uwu_blog, UwUBlog.NodeNetwork, req_options: [plug: {Req.Test, UwUBlog.NodeNetwork}]
+
 # Don't run the filesystem watcher in tests; the suite controls posts directly.
 # With `watch: false`, reads revalidate against file mtime, so edits are still
 # picked up without a restart.

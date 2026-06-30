@@ -30,7 +30,32 @@ defmodule UwUBlogWeb.AdminLive.Cluster do
 
   def handle_info({:nodeup, _node}, socket), do: {:noreply, load(socket)}
   def handle_info({:nodedown, _node}, socket), do: {:noreply, load(socket)}
+
+  # One-off reload to surface a manual egress refresh quickly, without rescheduling
+  # the periodic timer (that would compound on every button press).
+  def handle_info(:reload_once, socket), do: {:noreply, load(socket)}
   def handle_info(_msg, socket), do: {:noreply, socket}
+
+  @impl true
+  def handle_event("refresh_egress", %{"node" => node}, socket) do
+    case safe_node(node) do
+      nil ->
+        {:noreply, socket}
+
+      node ->
+        Cluster.refresh_egress(node)
+        Process.send_after(self(), :reload_once, :timer.seconds(2))
+        {:noreply, socket}
+    end
+  end
+
+  # The node name comes from the rendered list, so its atom already exists; a
+  # crafted value that doesn't resolve is simply ignored.
+  defp safe_node(node) when is_binary(node) do
+    String.to_existing_atom(node)
+  rescue
+    ArgumentError -> nil
+  end
 
   defp load(socket) do
     overview = Cluster.overview()
@@ -51,6 +76,31 @@ defmodule UwUBlogWeb.AdminLive.Cluster do
   # --- View helpers ---
 
   def node_label(node), do: to_string(node)
+
+  def egress_ip(%{ip: ip}) when is_binary(ip), do: ip
+  def egress_ip(_), do: "—"
+
+  def egress_as(%{asn: asn, as_org: org}) when is_integer(asn) do
+    ["AS#{asn}", org] |> Enum.reject(&is_nil/1) |> Enum.join(" · ")
+  end
+
+  def egress_as(_), do: nil
+
+  def egress_note(%{status: :pending}), do: "looking up…"
+  def egress_note(%{status: {:error, _}}), do: "lookup failed"
+  def egress_note(%{ip: nil}), do: "unknown"
+  def egress_note(_), do: nil
+
+  def format_ago(%DateTime{} = at) do
+    case DateTime.diff(DateTime.utc_now(), at, :second) do
+      s when s < 60 -> "#{s}s ago"
+      s when s < 3_600 -> "#{div(s, 60)}m ago"
+      s when s < 86_400 -> "#{div(s, 3_600)}h ago"
+      s -> "#{div(s, 86_400)}d ago"
+    end
+  end
+
+  def format_ago(_), do: "—"
 
   def cluster_summary(%{distributed?: false}),
     do: "running on a single node — distribution isn't enabled yet"

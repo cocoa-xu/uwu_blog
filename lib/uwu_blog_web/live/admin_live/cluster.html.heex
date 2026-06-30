@@ -45,10 +45,28 @@
       </div>
       <%= case result do %>
         <% {:ok, stats} -> %>
-          <div class="node-metrics">
-            <span><span class="node-metric-label">procs</span> {format_number(stats.process_count)}</span>
-            <span><span class="node-metric-label">mem</span> {format_bytes(stats.memory_total)}</span>
-            <span><span class="node-metric-label">up</span> {format_uptime(stats.uptime_ms)}</span>
+          <div class="node-detail">
+            <div class="node-metrics">
+              <span><span class="node-metric-label">procs</span> {format_number(stats.process_count)}</span>
+              <span><span class="node-metric-label">mem</span> {format_bytes(stats.memory_total)}</span>
+              <span><span class="node-metric-label">up</span> {format_uptime(stats.uptime_ms)}</span>
+            </div>
+            <div :if={stats.egress.status != :unavailable} class="node-egress">
+              <span class="node-metric-label">egress</span>
+              <span class="egress-ip">{egress_ip(stats.egress)}</span>
+              <span :if={egress_as(stats.egress)} class="egress-as">{egress_as(stats.egress)}</span>
+              <span :if={egress_note(stats.egress)} class="egress-note">{egress_note(stats.egress)}</span>
+              <span :if={stats.egress.fetched_at} class="egress-note">{format_ago(stats.egress.fetched_at)}</span>
+              <button
+                type="button"
+                class="egress-refresh"
+                phx-click="refresh_egress"
+                phx-value-node={node_label(node)}
+                title="re-check this node's public IP / ASN"
+              >
+                refresh
+              </button>
+            </div>
           </div>
         <% {:error, reason} -> %>
           <div class="node-metrics node-unreachable">unreachable · {inspect(reason)}</div>
@@ -68,6 +86,14 @@
     <div class="kv-row">
       <dt class="kv-key">architecture</dt>
       <dd class="kv-value">{@local.architecture}</dd>
+    </div>
+    <div :if={@local.egress.status != :unavailable} class="kv-row">
+      <dt class="kv-key">egress</dt>
+      <dd class="kv-value">
+        {egress_ip(@local.egress)}<span :if={egress_as(@local.egress)}> · {egress_as(@local.egress)}</span>
+        <span :if={egress_note(@local.egress)} class="kv-note">{egress_note(@local.egress)}</span>
+        <span :if={@local.egress.fetched_at} class="kv-note">updated {format_ago(@local.egress.fetched_at)}</span>
+      </dd>
     </div>
     <div class="kv-row">
       <dt class="kv-key">uptime</dt>

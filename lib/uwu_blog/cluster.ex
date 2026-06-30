@@ -8,6 +8,8 @@ defmodule UwUBlog.Cluster do
   snapshot — callers re-read to refresh.
   """
 
+  alias UwUBlog.NodeNetwork
+
   @rpc_timeout 1_500
 
   @doc "Cluster membership and discovery config, from this node's perspective."
@@ -63,7 +65,20 @@ defmodule UwUBlog.Cluster do
       memory_total: memory.total,
       memory_processes: Map.get(memory, :processes, 0),
       memory_binary: Map.get(memory, :binary, 0),
-      memory_ets: Map.get(memory, :ets, 0)
+      memory_ets: Map.get(memory, :ets, 0),
+      egress: NodeNetwork.get()
     }
+  end
+
+  @doc """
+  Triggers an egress re-lookup on `node` (locally or over RPC). Fire-and-forget:
+  the node refreshes asynchronously and the next `node_stats/1` reflects it.
+  """
+  def refresh_egress(node) do
+    if node == Node.self() do
+      NodeNetwork.refresh()
+    else
+      :rpc.call(node, NodeNetwork, :refresh, [], @rpc_timeout)
+    end
   end
 end
