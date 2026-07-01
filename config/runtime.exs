@@ -112,6 +112,11 @@ if config_env() == :prod do
   config :uwu_blog, UwUBlog.Repo,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    # Far-from-DB edge nodes (e.g. Brazil, ~275ms RTT) override these so a cold
+    # TLS+auth connect isn't dropped; defaults match the library (nearby nodes unchanged).
+    queue_target: String.to_integer(System.get_env("DB_QUEUE_TARGET") || "50"),
+    queue_interval: String.to_integer(System.get_env("DB_QUEUE_INTERVAL") || "1000"),
+    connect_timeout: String.to_integer(System.get_env("DB_CONNECT_TIMEOUT") || "5000"),
     stacktrace: true,
     show_sensitive_data_on_connection_error: true,
     ssl: [
