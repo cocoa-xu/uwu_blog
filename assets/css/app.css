@@ -960,4 +960,30 @@ body.admin-body {
   .admin-main {
     padding: 1.5rem 1.25rem 3rem;
   }
+
+  .admin-card {
+    padding: 1.25rem 1.1rem;
+  }
+
+  /* Stack each node's metrics/egress under its name, flush-left, instead of
+     right-aligning them into a ragged column on a narrow screen. */
+  .node-detail {
+    width: 100%;
+    align-items: flex-start;
+    margin-left: 0;
+  }
+
+  .egress-refresh {
+    padding: 0.3rem 0.7rem;
+  }
+
+  /* Key over value reads better than space-between once the row is phone-width. */
+  .kv-row {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .kv-value {
+    text-align: left;
+  }
 }
