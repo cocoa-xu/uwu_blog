@@ -40,7 +40,7 @@ defmodule UwUBlog.MixProject do
       {:ecto_sql, "~> 3.6"},
       {:file_system, "~> 1.0"},
       {:gettext, "~> 0.24.0"},
-      {:hackney, "~> 1.8"},
+      {:hackney, "~> 4.0"},
       {:jason, "~> 1.2"},
       {:live_toast, "~> 0.6.4"},
       {:mdex, "~> 0.13"},
@@ -67,7 +67,7 @@ defmodule UwUBlog.MixProject do
       {:lazy_html, ">= 0.1.0", only: :test},
 
       # Telemetry and metrics
-      {:sentry, "~> 10.2.0"},
+      {:sentry, "~> 13.2"},
       {:opentelemetry, "~> 1.0"},
       {:opentelemetry_api, "~> 1.0"},
       {:opentelemetry_cowboy, "~> 0.3"},
