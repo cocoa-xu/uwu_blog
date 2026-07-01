@@ -163,6 +163,7 @@ if config_env() == :prod do
       "//#{host}",
       "//ewr.uwucocoa.moe",
       "//lhr.uwucocoa.moe",
+      "//gru.uwucocoa.moe",
       "//nrt.uwucocoa.moe"
     ],
     http: [
