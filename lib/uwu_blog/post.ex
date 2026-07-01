@@ -28,6 +28,11 @@ defmodule UwUBlog.Post do
           content: String.t()
         }
 
+  # Render with raw HTML passed through (posts embed trusted HTML) and MDEx's
+  # built-in syntax highlighter off, so fenced blocks keep the plain
+  # `<code class="language-*">` markup the client-side highlighter expects.
+  @mdex_opts [render: [unsafe: true], syntax_highlight: nil]
+
   @doc """
   Process a post from a markdown file.
   """
@@ -44,8 +49,7 @@ defmodule UwUBlog.Post do
       dir: post.dir
     }
 
-    html_content =
-      process_content_to_ast(content, context, earmark_opts: [code_class_prefix: "language-"])
+    html_content = process_content_to_ast(content, context)
 
     %__MODULE__{
       frontmatter: frontmatter,
@@ -61,7 +65,7 @@ defmodule UwUBlog.Post do
   Cheaply resolve a post's permalink without rendering its content.
 
   Reads only the frontmatter (or derives it from the filename), so the collection
-  can index every post by permalink without paying the full Earmark + asset-upload
+  can index every post by permalink without paying the full Markdown + asset-upload
   cost of `process/1` up front.
   """
   @spec resolve_permalink(String.t()) :: String.t()
@@ -76,33 +80,18 @@ defmodule UwUBlog.Post do
   end
 
   @decorate trace()
-  def process_content_to_ast(content, context, opts \\ []) do
+  def process_content_to_ast(content, context) do
     content
-    |> Earmark.as_ast!(Earmark.Options.make_options!(opts[:earmark_opts] || []))
-    |> Earmark.Transform.map_ast(&handle_node(&1, context), true)
-    |> Earmark.Transform.transform()
+    |> MDEx.parse_document!()
+    |> MDEx.traverse_and_update(&handle_node(&1, context))
+    |> MDEx.to_html!(@mdex_opts)
   end
 
-  def handle_node(node = {"p", p_atts, [{"img", i_atts, content, i_meta}], p_meta}, context) do
-    {src, i_atts} =
-      Enum.reduce(i_atts, {nil, []}, fn
-        {"src", src}, {nil, other} ->
-          if is_image_url?(src) do
-            {nil, other}
-          else
-            {src, other}
-          end
-
-        attr, {src, other} ->
-          {src, [attr | other]}
-      end)
-
-    if src do
-      img_src = maybe_upload_image(context, src)
-
-      {:replace, {"p", p_atts, [{"img", [{"src", img_src}] ++ i_atts, content, i_meta}], p_meta}}
-    else
+  def handle_node(%MDEx.Image{url: url} = node, context) do
+    if is_image_url?(url) do
       node
+    else
+      %{node | url: maybe_upload_image(context, url)}
     end
   end
 
@@ -226,9 +215,9 @@ defmodule UwUBlog.Post do
     frontmatter =
       if excerpt == nil do
         excerpt =
-          case Earmark.Parser.as_ast(content) do
-            {:ok, [first | _], _} ->
-              Earmark.Transform.transform(first)
+          case MDEx.parse_document!(content) do
+            %MDEx.Document{nodes: [first | _]} ->
+              MDEx.to_html!(%MDEx.Document{nodes: [first]}, @mdex_opts)
 
             _ ->
               ""
