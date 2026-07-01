@@ -24,7 +24,7 @@ defmodule UwUBlog.Blog.Track do
     |> generate_track_id()
   end
 
-  def insert_or_ignore(attrs) do
+  def insert_or_ignore(%__MODULE__{} = attrs) do
     track_id = generate_track_id(attrs)
 
     case Repo.get_by(__MODULE__, track_id: track_id) do
